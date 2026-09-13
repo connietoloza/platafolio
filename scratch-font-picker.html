@@ -1,7 +1,7 @@
 <title>Signature Font Options</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Fredoka:wght@600&family=Quicksand:wght@700&family=Comfortaa:wght@700&family=Poppins:wght@600&family=Varela+Round&family=Nunito:wght@800&family=Space+Grotesk:wght@600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=DM+Serif+Display&family=Bricolage+Grotesque:wght@600&family=Unbounded:wght@600&family=Chewy&family=Paytone+One&family=Bebas+Neue&family=Archivo+Black&family=Righteous&family=Libre+Caslon+Display&display=swap">
 <style>
   :root {
     --ground: #FFF3F8; --surface: #FFFFFF; --ink: #3B2436; --ink-2: #6E4A63;
@@ -19,27 +19,37 @@
   }
   * { box-sizing: border-box; }
   body { background: var(--ground); color: var(--ink); font-family: system-ui, sans-serif; margin: 0; }
-  .wrap { max-width: 640px; margin: 0 auto; padding: 32px 20px 56px; }
-  h1 { font-size: 20px; margin: 0 0 6px; color: var(--ink); }
-  p.sub { color: var(--muted); font-size: 13.5px; margin: 0 0 24px; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 36px 20px 64px; }
+  h1 { font-size: 21px; margin: 0 0 6px; color: var(--ink); }
+  p.sub { color: var(--muted); font-size: 13.5px; margin: 0 0 28px; }
+  .grid { display: grid; gap: 14px; }
   .card {
-    background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
-    padding: 18px 20px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 18px;
+    padding: 26px 24px 20px; position: relative; overflow: hidden;
   }
-  .sample { font-size: 22px; color: var(--accent); }
-  .name { font-size: 11.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; white-space: nowrap; }
+  .num {
+    position: absolute; top: 14px; right: 18px; font-size: 11px; font-weight: 700;
+    color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent);
+    padding: 3px 10px; border-radius: 999px; letter-spacing: .04em;
+  }
+  .sample { font-size: 32px; color: var(--accent); line-height: 1.2; display: block; }
+  .name { font-size: 12px; color: var(--muted); margin-top: 8px; display: block; }
 </style>
 
 <div class="wrap">
   <h1>Pick one for "by Connie Toloza"</h1>
-  <p class="sub">Same pink accent color, just different letterforms. Tell me the number.</p>
+  <p class="sub">More editorial, less generic-app-font. Same pink, ten different personalities. Tell me the number.</p>
 
-  <div class="card"><span class="sample" style="font-family:'Baloo 2'">by Connie Toloza</span><span class="name">1 · Baloo 2</span></div>
-  <div class="card"><span class="sample" style="font-family:'Fredoka'">by Connie Toloza</span><span class="name">2 · Fredoka</span></div>
-  <div class="card"><span class="sample" style="font-family:'Quicksand'">by Connie Toloza</span><span class="name">3 · Quicksand</span></div>
-  <div class="card"><span class="sample" style="font-family:'Comfortaa'">by Connie Toloza</span><span class="name">4 · Comfortaa</span></div>
-  <div class="card"><span class="sample" style="font-family:'Poppins'">by Connie Toloza</span><span class="name">5 · Poppins</span></div>
-  <div class="card"><span class="sample" style="font-family:'Varela Round'">by Connie Toloza</span><span class="name">6 · Varela Round</span></div>
-  <div class="card"><span class="sample" style="font-family:'Nunito'; font-weight:800;">by Connie Toloza</span><span class="name">7 · Nunito</span></div>
-  <div class="card"><span class="sample" style="font-family:'Space Grotesk'">by Connie Toloza</span><span class="name">8 · Space Grotesk</span></div>
+  <div class="grid">
+    <div class="card"><span class="num">1</span><span class="sample" style="font-family:'Fraunces'">by Connie Toloza</span><span class="name">Fraunces — elegant, high-fashion serif</span></div>
+    <div class="card"><span class="num">2</span><span class="sample" style="font-family:'DM Serif Display'">by Connie Toloza</span><span class="name">DM Serif Display — classic, editorial</span></div>
+    <div class="card"><span class="num">3</span><span class="sample" style="font-family:'Libre Caslon Display'">by Connie Toloza</span><span class="name">Libre Caslon Display — old-money, glossy magazine</span></div>
+    <div class="card"><span class="num">4</span><span class="sample" style="font-family:'Bricolage Grotesque'">by Connie Toloza</span><span class="name">Bricolage Grotesque — trendy, modern, a little quirky</span></div>
+    <div class="card"><span class="num">5</span><span class="sample" style="font-family:'Unbounded'">by Connie Toloza</span><span class="name">Unbounded — bold, geometric, statement-y</span></div>
+    <div class="card"><span class="num">6</span><span class="sample" style="font-family:'Righteous'">by Connie Toloza</span><span class="name">Righteous — retro-futuristic, confident</span></div>
+    <div class="card"><span class="num">7</span><span class="sample" style="font-family:'Bebas Neue'; letter-spacing:.02em;">by Connie Toloza</span><span class="name">Bebas Neue — tall, condensed, poster-like</span></div>
+    <div class="card"><span class="num">8</span><span class="sample" style="font-family:'Archivo Black'">by Connie Toloza</span><span class="name">Archivo Black — heavy, clean, no-nonsense</span></div>
+    <div class="card"><span class="num">9</span><span class="sample" style="font-family:'Paytone One'">by Connie Toloza</span><span class="name">Paytone One — rounded, bold, friendly</span></div>
+    <div class="card"><span class="num">10</span><span class="sample" style="font-family:'Chewy'">by Connie Toloza</span><span class="name">Chewy — bubbly, playful, very cute</span></div>
+  </div>
 </div>
