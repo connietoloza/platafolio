@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import type { Entry, Accounts } from "@/lib/types";
+import type { Entry, Accounts, Goal } from "@/lib/types";
 
 const TARGETS: Record<string, number> = { transport: 38, food: 20 };
 const USUAL_IN = 250;
@@ -92,8 +92,11 @@ export default function Tracker() {
   const [userId, setUserId] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string>("");
   const [entries, setEntries] = useState<Entry[]>([]);
-  const [accounts, setAccounts] = useState<Accounts>({ paypal: 0, usbank: 0, clp: 0, rate: 942, goal: 0 });
-  const [balDraft, setBalDraft] = useState<{ paypal: string; usbank: string; clp: string; goal: string } | null>(null);
+  const [accounts, setAccounts] = useState<Accounts>({ paypal: 0, usbank: 0, clp: 0, rate: 942 });
+  const [balDraft, setBalDraft] = useState<{ paypal: string; usbank: string; clp: string } | null>(null);
+  const [goals, setGoals] = useState<Goal[]>([]);
+  const [goalName, setGoalName] = useState("");
+  const [goalTarget, setGoalTarget] = useState("");
   const [offset, setOffset] = useState(0);
   const [kind, setKind] = useState<"out" | "in" | "dad">("out");
   const [amount, setAmount] = useState("");
@@ -117,14 +120,16 @@ export default function Tracker() {
       setUserId(user.id);
       setUserEmail(user.email || "");
 
-      const [{ data: e, error: e1 }, { data: a, error: e2 }] = await Promise.all([
+      const [{ data: e, error: e1 }, { data: a, error: e2 }, { data: g, error: e3 }] = await Promise.all([
         supabase.from("entries").select("*"),
         supabase.from("accounts").select("*").eq("id", user.id).maybeSingle(),
+        supabase.from("goals").select("*"),
       ]);
       if (!alive) return;
-      if (e1 || e2) setBanner("Couldn't load your data. Reload the page to try again.");
+      if (e1 || e2 || e3) setBanner("Couldn't load your data. Reload the page to try again.");
       if (e) setEntries(e as Entry[]);
-      if (a) setAccounts({ paypal: Number(a.paypal) || 0, usbank: Number(a.usbank) || 0, clp: Number(a.clp) || 0, rate: Number(a.rate) || 942, goal: Number(a.goal) || 0 });
+      if (a) setAccounts({ paypal: Number(a.paypal) || 0, usbank: Number(a.usbank) || 0, clp: Number(a.clp) || 0, rate: Number(a.rate) || 942 });
+      if (g) setGoals(g as Goal[]);
       setLoaded(true);
 
       const channel = supabase
@@ -152,7 +157,24 @@ export default function Tracker() {
           (payload) => {
             const row = payload.new as any;
             if (!row) return;
-            setAccounts({ paypal: Number(row.paypal) || 0, usbank: Number(row.usbank) || 0, clp: Number(row.clp) || 0, rate: Number(row.rate) || 942, goal: Number(row.goal) || 0 });
+            setAccounts({ paypal: Number(row.paypal) || 0, usbank: Number(row.usbank) || 0, clp: Number(row.clp) || 0, rate: Number(row.rate) || 942 });
+          }
+        )
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "goals", filter: `user_id=eq.${user.id}` },
+          (payload) => {
+            setGoals((prev) => {
+              if (payload.eventType === "DELETE") return prev.filter((x) => x.id !== (payload.old as any).id);
+              const row = payload.new as Goal;
+              const i = prev.findIndex((x) => x.id === row.id);
+              if (i >= 0) {
+                const next = prev.slice();
+                next[i] = row;
+                return next;
+              }
+              return [...prev, row];
+            });
           }
         )
         .subscribe();
@@ -192,8 +214,33 @@ export default function Tracker() {
       return isFinite(v) ? v : 0;
     };
     return balDraft
-      ? { paypal: num(balDraft.paypal), usbank: num(balDraft.usbank), clp: num(balDraft.clp), goal: num(balDraft.goal) }
+      ? { paypal: num(balDraft.paypal), usbank: num(balDraft.usbank), clp: num(balDraft.clp) }
       : accounts;
+  }
+
+  async function addGoal(ev: React.FormEvent) {
+    ev.preventDefault();
+    if (!userId) return;
+    const target = Math.abs(parseFloat(goalTarget.replace(/[^0-9.-]/g, "")));
+    if (!goalName.trim() || !target || !isFinite(target)) return;
+    const g: Goal = { id: localId(), user_id: userId, name: goalName.trim(), target, saved: 0, ts: Date.now() };
+    setGoals((prev) => [...prev, g]);
+    setGoalName("");
+    setGoalTarget("");
+    const { error } = await supabase.from("goals").insert(g);
+    if (error) setBanner("That didn't save. Check your connection and try again.");
+  }
+
+  async function updateGoalSaved(id: string, value: string) {
+    const saved = Math.abs(parseFloat(value.replace(/[^0-9.-]/g, ""))) || 0;
+    setGoals((prev) => prev.map((g) => (g.id === id ? { ...g, saved } : g)));
+    const { error } = await supabase.from("goals").update({ saved }).eq("id", id);
+    if (error) setBanner("That didn't save. Check your connection and try again.");
+  }
+
+  async function removeGoal(id: string) {
+    setGoals((prev) => prev.filter((g) => g.id !== id));
+    await supabase.from("goals").delete().eq("id", id);
   }
 
   async function saveBalances() {
@@ -242,7 +289,9 @@ export default function Tracker() {
 
   const rateVal = accounts.rate > 0 ? accounts.rate : 942;
   const clpUsd = accounts.clp / rateVal;
-  const weeklyGoal = accounts.goal > 0 ? accounts.goal / 52 : 130;
+  const totalGoalTarget = goals.reduce((s, g) => s + g.target, 0);
+  const totalGoalSaved = goals.reduce((s, g) => s + g.saved, 0);
+  const weeklyGoal = totalGoalTarget > 0 ? totalGoalTarget / 52 : 130;
 
   const barRows = useMemo(() => {
     const sums: Record<string, { amount: number; n: number }> = {};
@@ -363,7 +412,6 @@ export default function Tracker() {
     paypal: accounts.paypal ? accounts.paypal.toFixed(2) : "",
     usbank: accounts.usbank ? accounts.usbank.toFixed(2) : "",
     clp: accounts.clp ? String(Math.round(accounts.clp)) : "",
-    goal: accounts.goal ? String(Math.round(accounts.goal)) : "",
   };
 
   const usualOut = TARGETS.transport + TARGETS.food;
@@ -693,21 +741,6 @@ export default function Tracker() {
             {goal.weeks.length ? `${goal.hit} of ${goal.weeks.length} ${goal.weeks.length === 1 ? "week" : "weeks"} hit ${fmtShort(weeklyGoal)}` : ""}
           </span>
         </div>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
-          <span className="eyebrow">Yearly goal</span>
-          <span className="balwrap">
-            <span className="sym">$</span>
-            <input
-              className="bal num"
-              inputMode="decimal"
-              aria-label="Yearly savings goal"
-              value={draft.goal}
-              onChange={(e) => setBalDraft({ ...draft, goal: e.target.value })}
-              onBlur={saveBalances}
-            />
-          </span>
-          <span className="sub">about {fmtShort(weeklyGoal)} a week</span>
-        </div>
         <div className="goaltop">
           <div>
             <span className="eyebrow">Kept since you started</span>
@@ -780,6 +813,64 @@ export default function Tracker() {
             </div>
           </div>
         </div>
+      </section>
+
+      <section className="panel card" aria-label="Your goals">
+        <div className="cardhead">
+          <h2>Your goals</h2>
+          <span className="meta">{goals.length ? `${fmt(totalGoalSaved)} of ${fmt(totalGoalTarget)}` : ""}</span>
+        </div>
+        {goals.length === 0 ? (
+          <p className="empty">Add what you're saving for below, tuition, a trip, a laptop, whatever, each with its own target.</p>
+        ) : (
+          goals.map((g) => {
+            const pct = g.target > 0 ? Math.min(100, (g.saved / g.target) * 100) : 0;
+            return (
+              <div className="goalrow" key={g.id}>
+                <span className="gname">{g.name}</span>
+                <span className="gamt">
+                  $
+                  <input
+                    inputMode="decimal"
+                    aria-label={`Saved toward ${g.name}`}
+                    defaultValue={g.saved ? String(Math.round(g.saved)) : "0"}
+                    onBlur={(e) => updateGoalSaved(g.id, e.target.value)}
+                  />
+                  <span className="gtarget">/ {fmtShort(g.target)}</span>
+                </span>
+                <button className="goaldel" type="button" aria-label={`Remove ${g.name}`} onClick={() => removeGoal(g.id)}>
+                  ×
+                </button>
+                <div className="goalbar">
+                  <div className="goalfill" style={{ width: Math.max(2, pct) + "%" }} />
+                </div>
+              </div>
+            );
+          })
+        )}
+        <form className="goaladd" onSubmit={addGoal}>
+          <label className="field">
+            <input
+              placeholder="what are you saving for?"
+              aria-label="Goal name"
+              value={goalName}
+              onChange={(e) => setGoalName(e.target.value)}
+            />
+          </label>
+          <label className="field amt">
+            <span className="cur">$</span>
+            <input
+              inputMode="decimal"
+              placeholder="target"
+              aria-label="Goal target amount"
+              value={goalTarget}
+              onChange={(e) => setGoalTarget(e.target.value)}
+            />
+          </label>
+          <button className="addbtn" type="submit" disabled={!goalName.trim() || !goalTarget}>
+            Add goal
+          </button>
+        </form>
       </section>
 
       <section className="panel card" aria-label="Recommendation for the week">

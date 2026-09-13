@@ -14,5 +14,13 @@ export type Accounts = {
   usbank: number;
   clp: number;
   rate: number;
-  goal: number; // savings goal for the year
+};
+
+export type Goal = {
+  id: string;
+  user_id: string;
+  name: string;
+  target: number;
+  saved: number;
+  ts: number;
 };
