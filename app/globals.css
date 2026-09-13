@@ -295,10 +295,19 @@ footer.note { margin-top: 20px; font-size: 12.5px; color: var(--muted); }
 .loginswitch a { color: var(--accent); font-weight: 700; text-decoration: none; }
 .loginswitch a:hover { text-decoration: underline; }
 
+.logindivider { display: flex; align-items: center; gap: 10px; margin: 14px 0; color: var(--muted); font-size: 12px; }
+.logindivider::before, .logindivider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.googlebtn {
+  width: 100%; height: 44px; border-radius: 13px; border: 1px solid var(--line); background: var(--surface);
+  color: var(--ink-2); font-weight: 700; font-size: 13.5px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+}
+.googlebtn:hover { border-color: var(--line-strong); background: var(--surface-2); }
+
 /* ---------- signature ---------- */
 .signature {
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-  font-family: "Caveat", cursive; font-size: 20px; font-weight: 700;
-  color: var(--accent); margin-bottom: 2px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  font-family: "Caveat", cursive; font-size: 30px; font-weight: 700;
+  line-height: 1; color: var(--accent); margin-bottom: 4px;
 }
-.signature svg { flex: none; transform: translateY(1px); }
+.signature svg { flex: none; }

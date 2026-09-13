@@ -57,11 +57,32 @@ const localId = () => "e" + Date.now().toString(36) + Math.random().toString(36)
 
 function BowIcon() {
   return (
-    <svg width="26" height="18" viewBox="0 0 28 20" fill="none" aria-hidden="true">
-      <path d="M13 10 C13 10 4 2 2 6 C0 10 8 10 13 10 Z" fill="var(--accent)" />
-      <path d="M15 10 C15 10 24 2 26 6 C28 10 20 10 15 10 Z" fill="var(--accent)" />
-      <circle cx="14" cy="10" r="2.4" fill="var(--ink)" opacity="0.15" />
-      <circle cx="14" cy="10" r="2" fill="var(--accent)" />
+    <svg width="36" height="32" viewBox="0 0 40 34" aria-hidden="true">
+      <path
+        d="M9 8 Q20 -1 31 8 Q32 18 31 25 Q31 31 25 31 L15 31 Q9 31 9 25 Q8 18 9 8 Z"
+        fill="var(--ink)"
+        opacity="0.88"
+      />
+      <ellipse cx="20" cy="17" rx="9.5" ry="10.5" fill="#FBDCC4" />
+      <path
+        d="M10.5 9 Q20 2.5 29.5 9 Q29.5 13 26 12 Q20 9 14 12 Q10.5 13 10.5 9 Z"
+        fill="var(--ink)"
+        opacity="0.88"
+      />
+      <circle cx="14.5" cy="20.5" r="1.7" fill="var(--accent)" opacity="0.45" />
+      <circle cx="25.5" cy="20.5" r="1.7" fill="var(--accent)" opacity="0.45" />
+      <path d="M12.5 17.5 Q14.5 19.7 16.5 17.5" stroke="var(--ink)" strokeWidth="1.4" fill="none" strokeLinecap="round" />
+      <path d="M16.3 16.2 L18.6 14.4 M16.3 17 L19 16.5 M16.3 17.6 L18.7 18.3" stroke="var(--ink)" strokeWidth="0.9" strokeLinecap="round" />
+      <path d="M23.5 17.5 Q25.5 19.7 27.5 17.5" stroke="var(--ink)" strokeWidth="1.4" fill="none" strokeLinecap="round" />
+      <path d="M27.7 16.2 L25.4 14.4 M27.7 17 L25 16.5 M27.7 17.6 L25.3 18.3" stroke="var(--ink)" strokeWidth="0.9" strokeLinecap="round" />
+      <path d="M17.5 24 Q20 26 22.5 24" stroke="var(--ink)" strokeWidth="1.1" fill="none" strokeLinecap="round" />
+      <text x="0" y="24" fontFamily="Baloo 2, sans-serif" fontWeight="800" fontSize="12" fill="var(--accent)">
+        $
+      </text>
+      <path
+        d="M34.2 12.4c-1.1-1.3-3.1-.6-3.1 1 0 1.4 1.8 2.6 3.1 3.7 1.3-1.1 3.1-2.3 3.1-3.7 0-1.6-2-2.3-3.1-1z"
+        fill="var(--accent)"
+      />
     </svg>
   );
 }

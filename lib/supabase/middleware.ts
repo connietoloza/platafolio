@@ -28,7 +28,8 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
-  const isAuthPage = path.startsWith("/login") || path.startsWith("/signup");
+  const isAuthPage =
+    path.startsWith("/login") || path.startsWith("/signup") || path.startsWith("/auth/callback");
   const isPublicAsset = path.startsWith("/_next/static") || path.startsWith("/favicon");
 
   if (!user && !isAuthPage && !isPublicAsset) {
