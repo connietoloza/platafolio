@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { supabase, type Entry, type Accounts } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
+import type { Entry, Accounts } from "@/lib/types";
 
 const TARGETS: Record<string, number> = { transport: 38, food: 20 };
 const USUAL_IN = 250;
@@ -26,7 +27,7 @@ const CATS: Record<"out" | "in" | "dad", Cat[]> = {
     { id: "refund", label: "Refund", color: "var(--in)" },
     { id: "other_in", label: "Other", color: "var(--in)" },
   ],
-  dad: [{ id: "dad", label: "From dad (Zelle)", color: "var(--accent)" }],
+  dad: [{ id: "dad", label: "Zelled to my bank account from dad", color: "var(--accent)" }],
 };
 const CATMAP: Record<string, Cat> = {};
 (["out", "in", "dad"] as const).forEach((k) => CATS[k].forEach((c) => (CATMAP[c.id] = c)));
@@ -54,7 +55,21 @@ const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct
 const shortDate = (d: Date) => MON[d.getMonth()] + " " + d.getDate();
 const localId = () => "e" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 
+function BowIcon() {
+  return (
+    <svg width="26" height="18" viewBox="0 0 28 20" fill="none" aria-hidden="true">
+      <path d="M13 10 C13 10 4 2 2 6 C0 10 8 10 13 10 Z" fill="var(--accent)" />
+      <path d="M15 10 C15 10 24 2 26 6 C28 10 20 10 15 10 Z" fill="var(--accent)" />
+      <circle cx="14" cy="10" r="2.4" fill="var(--ink)" opacity="0.15" />
+      <circle cx="14" cy="10" r="2" fill="var(--accent)" />
+    </svg>
+  );
+}
+
 export default function Tracker() {
+  const [supabase] = useState(() => createClient());
+  const [userId, setUserId] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string>("");
   const [entries, setEntries] = useState<Entry[]>([]);
   const [accounts, setAccounts] = useState<Accounts>({ paypal: 0, usbank: 0, clp: 0, rate: 942 });
   const [balDraft, setBalDraft] = useState<{ paypal: string; usbank: string; clp: string } | null>(null);
@@ -72,44 +87,63 @@ export default function Tracker() {
   useEffect(() => {
     let alive = true;
     (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!alive) return;
+      if (!user) {
+        window.location.href = "/login";
+        return;
+      }
+      setUserId(user.id);
+      setUserEmail(user.email || "");
+
       const [{ data: e, error: e1 }, { data: a, error: e2 }] = await Promise.all([
         supabase.from("entries").select("*"),
-        supabase.from("accounts").select("*").eq("id", "main").maybeSingle(),
+        supabase.from("accounts").select("*").eq("id", user.id).maybeSingle(),
       ]);
       if (!alive) return;
-      if (e1 || e2) setBanner("Couldn't load your data. Check the Supabase setup and reload.");
+      if (e1 || e2) setBanner("Couldn't load your data. Reload the page to try again.");
       if (e) setEntries(e as Entry[]);
       if (a) setAccounts({ paypal: Number(a.paypal) || 0, usbank: Number(a.usbank) || 0, clp: Number(a.clp) || 0, rate: Number(a.rate) || 942 });
       setLoaded(true);
-    })();
 
-    const channel = supabase
-      .channel("wiwo-live")
-      .on("postgres_changes", { event: "*", schema: "public", table: "entries" }, (payload) => {
-        setEntries((prev) => {
-          if (payload.eventType === "DELETE") return prev.filter((x) => x.id !== (payload.old as any).id);
-          const row = payload.new as Entry;
-          const i = prev.findIndex((x) => x.id === row.id);
-          if (i >= 0) {
-            const next = prev.slice();
-            next[i] = row;
-            return next;
+      const channel = supabase
+        .channel("wiwo-live")
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "entries", filter: `user_id=eq.${user.id}` },
+          (payload) => {
+            setEntries((prev) => {
+              if (payload.eventType === "DELETE") return prev.filter((x) => x.id !== (payload.old as any).id);
+              const row = payload.new as Entry;
+              const i = prev.findIndex((x) => x.id === row.id);
+              if (i >= 0) {
+                const next = prev.slice();
+                next[i] = row;
+                return next;
+              }
+              return [...prev, row];
+            });
           }
-          return [...prev, row];
-        });
-      })
-      .on("postgres_changes", { event: "*", schema: "public", table: "accounts" }, (payload) => {
-        const row = payload.new as any;
-        if (!row) return;
-        setAccounts({ paypal: Number(row.paypal) || 0, usbank: Number(row.usbank) || 0, clp: Number(row.clp) || 0, rate: Number(row.rate) || 942 });
-      })
-      .subscribe();
+        )
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "accounts", filter: `id=eq.${user.id}` },
+          (payload) => {
+            const row = payload.new as any;
+            if (!row) return;
+            setAccounts({ paypal: Number(row.paypal) || 0, usbank: Number(row.usbank) || 0, clp: Number(row.clp) || 0, rate: Number(row.rate) || 942 });
+          }
+        )
+        .subscribe();
 
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    })();
     return () => {
       alive = false;
-      supabase.removeChannel(channel);
     };
-  }, []);
+  }, [supabase]);
 
   function showToast(text: string, undo?: () => void) {
     setToastMsg({ text, undo });
@@ -117,8 +151,9 @@ export default function Tracker() {
     toastTimer.current = setTimeout(() => setToastMsg(null), 6000);
   }
 
-  async function addEntry(data: Omit<Entry, "id" | "ts">) {
-    const e: Entry = { id: localId(), ts: Date.now(), ...data };
+  async function addEntry(data: Omit<Entry, "id" | "ts" | "user_id">) {
+    if (!userId) return;
+    const e: Entry = { id: localId(), ts: Date.now(), user_id: userId, ...data };
     setEntries((prev) => [...prev, e]);
     const { error } = await supabase.from("entries").insert(e);
     if (error) setBanner("That didn't save. Check your connection and try again.");
@@ -141,12 +176,20 @@ export default function Tracker() {
   }
 
   async function saveBalances() {
+    if (!userId) return;
     const next = { ...accounts, ...readBalDraft() };
     setAccounts(next);
     setBalDraft(null);
-    const { error } = await supabase.from("accounts").upsert({ id: "main", ...next, updated_at: Date.now() });
+    const { error } = await supabase.from("accounts").upsert({ id: userId, ...next, updated_at: Date.now() });
     if (error) setBanner("That didn't save. Check your connection and try again.");
   }
+
+  async function logout() {
+    await supabase.auth.signOut();
+    window.location.href = "/login";
+  }
+
+  ["bal-paypal", "bal-usbank", "bal-clp"]; // (kept for reference; inputs are controlled below)
 
   function weekRange(off: number) {
     const s = startOfWeek(new Date());
@@ -282,14 +325,20 @@ export default function Tracker() {
 
   const usualOut = TARGETS.transport + TARGETS.food;
 
+  if (!loaded) return null;
+
   return (
     <div className="wrap">
+      <div className="signature">
+        <BowIcon />
+        made by connie
+      </div>
       <header>
         <div>
           <div className="headtop">
-            <h1>Week in, week out</h1>
-            <button className="logout" onClick={() => (window.location.href = "/api/logout")} type="button">
-              log out
+            <h1>Know Your Money w/ Connie</h1>
+            <button className="logout" onClick={logout} type="button">
+              log out{userEmail ? ` (${userEmail})` : ""}
             </button>
           </div>
           <p className="since">
@@ -408,7 +457,7 @@ export default function Tracker() {
             <div className="flowline">
               <span className="lbl">
                 <i className="dotmark" style={{ background: "var(--accent)" }} />
-                From your dad
+                Zelled to my bank account from dad
               </span>
               <span className="val num">{fmt(totals.fromDad)}</span>
             </div>

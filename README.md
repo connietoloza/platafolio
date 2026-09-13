@@ -1,12 +1,13 @@
-# Week in, Week out
+# Know Your Money w/ Connie
 
-Your own weekly money tracker — accounts, weekly in/out, category targets, and a tuition fund chart, as a real site you own and can put on Vercel.
+A weekly money tracker — accounts, weekly in/out, category targets, and a tuition fund chart. Anyone can sign up and gets their own private tracker; your data is never visible to anyone else who signs up.
 
 ## 1. Create a free Supabase project
 
 1. Go to [supabase.com](https://supabase.com), sign up, and create a new project (any name/region, free tier).
-2. Once it's ready, open **SQL Editor → New query**, paste in the contents of [`supabase/schema.sql`](supabase/schema.sql), and run it. This creates the `entries` and `accounts` tables.
-3. Open **Project Settings → API**. You'll need the **Project URL** and the **anon public** key.
+2. Open **SQL Editor → New query**, paste in the contents of [`supabase/schema.sql`](supabase/schema.sql), and run it. This creates the `entries` and `accounts` tables, with row-level security so each signed-in user only ever sees their own rows.
+3. Open **Authentication → Providers** and make sure **Email** is enabled (it is by default). If you want people to be able to sign up and start using the app immediately without clicking a confirmation email, turn off **Confirm email** under **Authentication → Sign In / Providers → Email**.
+4. Open **Project Settings → API**. You'll need the **Project URL** and the **anon public** key.
 
 ## 2. Set your local environment variables
 
@@ -14,9 +15,7 @@ Your own weekly money tracker — accounts, weekly in/out, category targets, and
 cp .env.local.example .env.local
 ```
 
-Edit `.env.local` and fill in:
-- `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` — from Supabase step 1.3 above
-- `TRACKER_PASSCODE` — any passcode you want to type to open the site (this is the only login this app has — see **Security note** below)
+Edit `.env.local` and fill in `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` from step 1.4 above.
 
 ## 3. Run it locally
 
@@ -27,7 +26,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000 and enter your passcode.
+Open http://localhost:3000, click **Create an account**, and sign up with an email and password.
 
 ## 4. Push to GitHub
 
@@ -48,19 +47,16 @@ git push -u origin main
 ## 5. Deploy on Vercel
 
 1. Go to [vercel.com/new](https://vercel.com/new) and import the GitHub repo you just pushed.
-2. In the import screen, add the same three environment variables from your `.env.local` (Supabase URL, Supabase anon key, passcode).
-3. Deploy. Vercel gives you a `.vercel.app` URL — that's your site.
+2. In the import screen, add the two environment variables from your `.env.local` (Supabase URL, Supabase anon key).
+3. Deploy. Vercel gives you a `.vercel.app` URL — that's your site. Anyone with the link can sign up for their own account.
 
 Any time you `git push`, Vercel redeploys automatically.
 
-## Security note
+## How the accounts work
 
-This app is gated by a single shared passcode, not a real login system — good enough to keep it off Google and out of casual reach, not bank-grade. Two things worth knowing:
-
-- The Supabase anon key ships in the browser (that's normal for Supabase apps), and the database policies in `schema.sql` allow full read/write with that key — so anyone who both learns your passcode *and* inspects the network requests could read the Supabase URL/key directly. Keep the URL and passcode private, the same way you'd protect a shared budgeting spreadsheet.
-- If you ever want this locked down further (e.g. real email/password login, or a server-side proxy so the Supabase key never reaches the browser), that's a follow-up worth asking for — it's a bigger change than this first version.
+Each person who signs up gets a real Supabase Auth account (email + password). Every row in `entries` and `accounts` is tagged with a `user_id`, and Postgres row-level security policies enforce that a signed-in user can only ever read or write rows where `user_id` matches their own — enforced by the database itself, not just the app's UI.
 
 ## Notes
 
-- Data lives in your own Supabase project, synced in real time across any device you log into.
+- Data syncs in real time across any device you're logged into.
 - Hover over the charts for a moment to see the tooltip with exact numbers.

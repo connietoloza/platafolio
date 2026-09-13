@@ -1,12 +1,14 @@
 "use client";
 
-import { Suspense, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
-function LoginForm() {
+export default function LoginPage() {
   const router = useRouter();
-  const params = useSearchParams();
-  const [passcode, setPasscode] = useState("");
+  const [supabase] = useState(() => createClient());
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -14,48 +16,53 @@ function LoginForm() {
     e.preventDefault();
     setBusy(true);
     setError("");
-    const res = await fetch("/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ passcode, next: params.get("next") || "/" }),
-    });
-    const data = await res.json();
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     setBusy(false);
-    if (!res.ok) {
-      setError(data.error || "That's not it — try again.");
+    if (error) {
+      setError(error.message === "Invalid login credentials" ? "Wrong email or password." : error.message);
       return;
     }
-    router.replace(data.next || "/");
+    router.replace("/");
     router.refresh();
   }
 
   return (
     <div className="loginwrap">
       <form className="loginpanel" onSubmit={submit}>
-        <h1>Week in, week out</h1>
-        <p className="loginsub">Enter your passcode to open the tracker.</p>
+        <div className="signature">
+          <svg width="26" height="18" viewBox="0 0 28 20" fill="none" aria-hidden="true">
+            <path d="M13 10 C13 10 4 2 2 6 C0 10 8 10 13 10 Z" fill="var(--accent)" />
+            <path d="M15 10 C15 10 24 2 26 6 C28 10 20 10 15 10 Z" fill="var(--accent)" />
+            <circle cx="14" cy="10" r="2.4" fill="var(--ink)" opacity="0.15" />
+            <circle cx="14" cy="10" r="2" fill="var(--accent)" />
+          </svg>
+          made by connie
+        </div>
+        <h1>Know Your Money w/ Connie</h1>
+        <p className="loginsub">Sign in to open your tracker.</p>
+        <input
+          className="loginfield"
+          type="email"
+          autoFocus
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
         <input
           className="loginfield"
           type="password"
-          inputMode="text"
-          autoFocus
-          placeholder="Passcode"
-          value={passcode}
-          onChange={(e) => setPasscode(e.target.value)}
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
         {error && <p className="loginerr">{error}</p>}
-        <button className="loginbtn" type="submit" disabled={busy || !passcode}>
-          {busy ? "Checking…" : "Open tracker"}
+        <button className="loginbtn" type="submit" disabled={busy || !email || !password}>
+          {busy ? "Signing in…" : "Sign in"}
         </button>
+        <p className="loginswitch">
+          New here? <a href="/signup">Create an account</a>
+        </p>
       </form>
     </div>
-  );
-}
-
-export default function LoginPage() {
-  return (
-    <Suspense fallback={null}>
-      <LoginForm />
-    </Suspense>
   );
 }
