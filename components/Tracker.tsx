@@ -71,15 +71,22 @@ function BowIcon() {
       />
       <circle cx="14.5" cy="20.5" r="1.7" fill="var(--accent)" opacity="0.45" />
       <circle cx="25.5" cy="20.5" r="1.7" fill="var(--accent)" opacity="0.45" />
-      <path d="M12.5 17.5 Q14.5 19.7 16.5 17.5" stroke="var(--ink)" strokeWidth="1.4" fill="none" strokeLinecap="round" />
-      <path d="M12.2 17.3 L9.5 14.9 M12.0 17.9 L9.0 16.3 M12.4 18.3 L9.6 17.2" stroke="var(--ink)" strokeWidth="0.9" strokeLinecap="round" />
-      <path d="M23.5 17.5 Q25.5 19.7 27.5 17.5" stroke="var(--ink)" strokeWidth="1.4" fill="none" strokeLinecap="round" />
-      <path d="M27.8 17.3 L30.5 14.9 M28.0 17.9 L31.0 16.3 M27.6 18.3 L30.4 17.2" stroke="var(--ink)" strokeWidth="0.9" strokeLinecap="round" />
-      <path d="M17.5 24 Q20 26 22.5 24" stroke="var(--ink)" strokeWidth="1.1" fill="none" strokeLinecap="round" />
-      <path d="M24.5 28.5 L30.5 22.5" stroke="#FBDCC4" strokeWidth="3" strokeLinecap="round" />
-      <path d="M30.5 28.5 L24.5 22.5" stroke="#FBDCC4" strokeWidth="3" strokeLinecap="round" />
+      <path d="M12.3 17.6 Q14.5 15.7 16.7 17.6" stroke="var(--ink)" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+      <path d="M23.5 17.5 Q25.5 19.9 27.5 17.5" stroke="var(--ink)" strokeWidth="1.4" fill="none" strokeLinecap="round" />
       <path
-        d="M27.5 24.1c-.55-.65-1.55-.28-1.55.45 0 .7.9 1.35 1.55 1.9.65-.55 1.55-1.2 1.55-1.9 0-.73-1-1.1-1.55-.45z"
+        d="M27.9 17.5 L28.7 14.6 M27.9 17.5 L29.6 15.0 M27.9 17.5 L30.4 15.7 M27.9 17.5 L30.9 17.0"
+        stroke="var(--ink)"
+        strokeWidth="0.9"
+        strokeLinecap="round"
+      />
+      <path d="M16.5 23.3 Q20 27.8 23.5 23.3" stroke="var(--ink)" strokeWidth="1.2" fill="none" strokeLinecap="round" />
+      <ellipse cx="27.3" cy="27.5" rx="3.6" ry="3.1" fill="#FBDCC4" stroke="var(--ink)" strokeWidth="0.7" />
+      <path d="M24.3 28.7 L30.3 22.7" stroke="var(--ink)" strokeWidth="3.6" strokeLinecap="round" />
+      <path d="M30.3 28.7 L24.3 22.7" stroke="var(--ink)" strokeWidth="3.6" strokeLinecap="round" />
+      <path d="M24.3 28.7 L30.3 22.7" stroke="#FBDCC4" strokeWidth="2.6" strokeLinecap="round" />
+      <path d="M30.3 28.7 L24.3 22.7" stroke="#FBDCC4" strokeWidth="2.6" strokeLinecap="round" />
+      <path
+        d="M27.3 23.6c-.55-.65-1.55-.28-1.55.45 0 .7.9 1.35 1.55 1.9.65-.55 1.55-1.2 1.55-1.9 0-.73-1-1.1-1.55-.45z"
         fill="var(--accent)"
       />
     </svg>
