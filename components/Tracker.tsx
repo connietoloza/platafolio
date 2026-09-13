@@ -76,11 +76,7 @@ function BowIcon() {
         strokeWidth="0.8"
         strokeLinecap="round"
       />
-      <path d="M23.3 17.6 Q25.5 15.3 27.7 17.6 Q25.5 20.3 23.3 17.6 Z" fill="#FFFFFF" stroke="#3A2A1E" strokeWidth="1" />
-      <circle cx="25.5" cy="17.9" r="1.7" fill="#7A4B23" />
-      <circle cx="25.5" cy="17.9" r="0.85" fill="#221812" />
-      <circle cx="25.9" cy="17.4" r="0.4" fill="#FFFFFF" />
-      <path d="M27.7 17.4 L29.4 16.5" stroke="#3A2A1E" strokeWidth="1" strokeLinecap="round" />
+      <path d="M23.3 17.6 Q25.5 15.9 27.7 17.6" stroke="#3A2A1E" strokeWidth="1.1" fill="none" strokeLinecap="round" />
       <path
         d="M27.7 17.3 L28.5 14.5 M27.9 17.7 L29.4 15.2 M27.9 18.2 L30.2 16.1 M27.7 18.6 L30.5 17.6"
         stroke="#3A2A1E"
@@ -88,18 +84,6 @@ function BowIcon() {
         strokeLinecap="round"
       />
       <path d="M16.5 23.3 Q20 27.5 23.5 23.3" stroke="#C2454F" strokeWidth="1.3" fill="none" strokeLinecap="round" />
-      <ellipse cx="27" cy="29" rx="4" ry="3.2" fill="#FBDCC4" stroke="#3A2A1E" strokeWidth="0.7" />
-      <circle cx="24.6" cy="26.6" r="1.3" fill="#FBDCC4" stroke="#3A2A1E" strokeWidth="0.5" />
-      <circle cx="27" cy="25.9" r="1.3" fill="#FBDCC4" stroke="#3A2A1E" strokeWidth="0.5" />
-      <circle cx="29.4" cy="26.6" r="1.3" fill="#FBDCC4" stroke="#3A2A1E" strokeWidth="0.5" />
-      <path d="M24 29 Q23.3 24.3 27.2 23" stroke="#3A2A1E" strokeWidth="3.2" strokeLinecap="round" fill="none" />
-      <path d="M30 29 Q30.7 24.1 27 23.3" stroke="#3A2A1E" strokeWidth="3.2" strokeLinecap="round" fill="none" />
-      <path d="M24 29 Q23.3 24.3 27.2 23" stroke="#FBDCC4" strokeWidth="2.1" strokeLinecap="round" fill="none" />
-      <path d="M30 29 Q30.7 24.1 27 23.3" stroke="#FBDCC4" strokeWidth="2.1" strokeLinecap="round" fill="none" />
-      <path
-        d="M27.1 22.6c-.5-.6-1.4-.25-1.4.4 0 .65.8 1.25 1.4 1.75.6-.5 1.4-1.1 1.4-1.75 0-.65-.9-1-1.4-.4z"
-        fill="var(--accent)"
-      />
     </svg>
   );
 }
