@@ -39,19 +39,20 @@ export default function LoginPage() {
     <div className="loginwrap">
       <form className="loginpanel" onSubmit={submit}>
         <div className="signature">
-          <svg width="36" height="32" viewBox="0 0 40 34" aria-hidden="true">
+          <svg width="38" height="34" viewBox="0 0 40 36" aria-hidden="true">
             <path d="M9 8 Q20 -1 31 8 Q32 18 31 25 Q31 31 25 31 L15 31 Q9 31 9 25 Q8 18 9 8 Z" fill="var(--ink)" opacity="0.88" />
             <ellipse cx="20" cy="17" rx="9.5" ry="10.5" fill="#FBDCC4" />
             <path d="M10.5 9 Q20 2.5 29.5 9 Q29.5 13 26 12 Q20 9 14 12 Q10.5 13 10.5 9 Z" fill="var(--ink)" opacity="0.88" />
             <circle cx="14.5" cy="20.5" r="1.7" fill="var(--accent)" opacity="0.45" />
             <circle cx="25.5" cy="20.5" r="1.7" fill="var(--accent)" opacity="0.45" />
             <path d="M12.5 17.5 Q14.5 19.7 16.5 17.5" stroke="var(--ink)" strokeWidth="1.4" fill="none" strokeLinecap="round" />
-            <path d="M16.3 16.2 L18.6 14.4 M16.3 17 L19 16.5 M16.3 17.6 L18.7 18.3" stroke="var(--ink)" strokeWidth="0.9" strokeLinecap="round" />
+            <path d="M12.2 17.3 L9.5 14.9 M12.0 17.9 L9.0 16.3 M12.4 18.3 L9.6 17.2" stroke="var(--ink)" strokeWidth="0.9" strokeLinecap="round" />
             <path d="M23.5 17.5 Q25.5 19.7 27.5 17.5" stroke="var(--ink)" strokeWidth="1.4" fill="none" strokeLinecap="round" />
-            <path d="M27.7 16.2 L25.4 14.4 M27.7 17 L25 16.5 M27.7 17.6 L25.3 18.3" stroke="var(--ink)" strokeWidth="0.9" strokeLinecap="round" />
+            <path d="M27.8 17.3 L30.5 14.9 M28.0 17.9 L31.0 16.3 M27.6 18.3 L30.4 17.2" stroke="var(--ink)" strokeWidth="0.9" strokeLinecap="round" />
             <path d="M17.5 24 Q20 26 22.5 24" stroke="var(--ink)" strokeWidth="1.1" fill="none" strokeLinecap="round" />
-            <text x="0" y="24" fontFamily="Baloo 2, sans-serif" fontWeight="800" fontSize="12" fill="var(--accent)">$</text>
-            <path d="M34.2 12.4c-1.1-1.3-3.1-.6-3.1 1 0 1.4 1.8 2.6 3.1 3.7 1.3-1.1 3.1-2.3 3.1-3.7 0-1.6-2-2.3-3.1-1z" fill="var(--accent)" />
+            <path d="M24.5 28.5 L30.5 22.5" stroke="#FBDCC4" strokeWidth="3" strokeLinecap="round" />
+            <path d="M30.5 28.5 L24.5 22.5" stroke="#FBDCC4" strokeWidth="3" strokeLinecap="round" />
+            <path d="M27.5 24.1c-.55-.65-1.55-.28-1.55.45 0 .7.9 1.35 1.55 1.9.65-.55 1.55-1.2 1.55-1.9 0-.73-1-1.1-1.55-.45z" fill="var(--accent)" />
           </svg>
           made by connie
         </div>
