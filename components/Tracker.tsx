@@ -353,7 +353,7 @@ export default function Tracker() {
     <div className="wrap">
       <div className="signature">
         <BowIcon />
-        made by connie
+        by Connie Toloza
       </div>
       <header>
         <div>

@@ -56,7 +56,7 @@ export default function SignupPage() {
             <path d="M27.7 17.3 L28.5 14.5 M27.9 17.7 L29.4 15.2 M27.9 18.2 L30.2 16.1 M27.7 18.6 L30.5 17.6" stroke="#3A2A1E" strokeWidth="0.85" strokeLinecap="round" />
             <path d="M16.5 23.3 Q20 27.5 23.5 23.3" stroke="#C2454F" strokeWidth="1.3" fill="none" strokeLinecap="round" />
           </svg>
-          Connie Toloza &middot; built this
+          by Connie Toloza
         </div>
         <h1>Know Your Money w Connie</h1>
         {checkEmail ? (
