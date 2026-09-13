@@ -1,4 +1,4 @@
-# Know Your Money w/ Connie
+# Know Your Money w Connie
 
 A weekly money tracker — accounts, weekly in/out, category targets, and a tuition fund chart. Anyone can sign up and gets their own private tracker; your data is never visible to anyone else who signs up.
 
