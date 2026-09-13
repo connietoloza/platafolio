@@ -1,7 +1,7 @@
 <title>Signature Font Options</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=DM+Serif+Display&family=Bricolage+Grotesque:wght@600&family=Unbounded:wght@600&family=Chewy&family=Paytone+One&family=Bebas+Neue&family=Archivo+Black&family=Righteous&family=Libre+Caslon+Display&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=DM+Serif+Display&family=Bricolage+Grotesque:wght@600&family=Unbounded:wght@600&family=Chewy&family=Paytone+One&family=Bebas+Neue&family=Archivo+Black&family=Righteous&family=Libre+Caslon+Display&family=Tinos:wght@700&display=swap">
 <style>
   :root {
     --ground: #FFF3F8; --surface: #FFFFFF; --ink: #3B2436; --ink-2: #6E4A63;
@@ -34,6 +34,13 @@
   }
   .sample { font-size: 32px; color: var(--accent); line-height: 1.2; display: block; }
   .name { font-size: 12px; color: var(--muted); margin-top: 8px; display: block; }
+  .picked { border-color: var(--accent); }
+  .badge {
+    position: absolute; top: 14px; left: 18px; font-size: 11px; font-weight: 700;
+    color: #fff; background: var(--accent); padding: 3px 10px; border-radius: 999px;
+  }
+  h2 { font-size: 15px; margin: 40px 0 4px; color: var(--ink); }
+  .title-sample { font-size: 36px; color: var(--accent); line-height: 1.15; display: block; }
 </style>
 
 <div class="wrap">
@@ -47,9 +54,17 @@
     <div class="card"><span class="num">4</span><span class="sample" style="font-family:'Bricolage Grotesque'">by Connie Toloza</span><span class="name">Bricolage Grotesque — trendy, modern, a little quirky</span></div>
     <div class="card"><span class="num">5</span><span class="sample" style="font-family:'Unbounded'">by Connie Toloza</span><span class="name">Unbounded — bold, geometric, statement-y</span></div>
     <div class="card"><span class="num">6</span><span class="sample" style="font-family:'Righteous'">by Connie Toloza</span><span class="name">Righteous — retro-futuristic, confident</span></div>
-    <div class="card"><span class="num">7</span><span class="sample" style="font-family:'Bebas Neue'; letter-spacing:.02em;">by Connie Toloza</span><span class="name">Bebas Neue — tall, condensed, poster-like</span></div>
+    <div class="card picked"><span class="badge">picked</span><span class="num">7</span><span class="sample" style="font-family:'Bebas Neue'; letter-spacing:.03em;">BY CONNIE TOLOZA</span><span class="name">Bebas Neue — tall, condensed, poster-like (now live)</span></div>
     <div class="card"><span class="num">8</span><span class="sample" style="font-family:'Archivo Black'">by Connie Toloza</span><span class="name">Archivo Black — heavy, clean, no-nonsense</span></div>
     <div class="card"><span class="num">9</span><span class="sample" style="font-family:'Paytone One'">by Connie Toloza</span><span class="name">Paytone One — rounded, bold, friendly</span></div>
     <div class="card"><span class="num">10</span><span class="sample" style="font-family:'Chewy'">by Connie Toloza</span><span class="name">Chewy — bubbly, playful, very cute</span></div>
+  </div>
+
+  <h2>Same idea, but for the big "Know Your Money w Connie" title</h2>
+  <p class="sub">You asked to see #2 and #10 as a title — here they are next to what's live now.</p>
+  <div class="grid">
+    <div class="card"><span class="num">live</span><span class="title-sample" style="font-family:'Tinos'; font-weight:700;">Know Your Money w Connie</span><span class="name">Tinos — Times New Roman-style serif (currently on the site)</span></div>
+    <div class="card"><span class="num">2</span><span class="title-sample" style="font-family:'DM Serif Display'">Know Your Money w Connie</span><span class="name">DM Serif Display — classic, editorial</span></div>
+    <div class="card"><span class="num">10</span><span class="title-sample" style="font-family:'Chewy'">Know Your Money w Connie</span><span class="name">Chewy — bubbly, playful, very cute</span></div>
   </div>
 </div>

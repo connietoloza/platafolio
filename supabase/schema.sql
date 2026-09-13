@@ -18,6 +18,7 @@ create table if not exists accounts (
   usbank numeric default 0,
   clp numeric default 0,
   rate numeric default 942,
+  goal numeric default 6760,
   updated_at bigint
 );
 

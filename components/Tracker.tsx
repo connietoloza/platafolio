@@ -6,7 +6,6 @@ import type { Entry, Accounts } from "@/lib/types";
 
 const TARGETS: Record<string, number> = { transport: 38, food: 20 };
 const USUAL_IN = 250;
-const GOAL = 130;
 
 type Cat = { id: string; label: string; color: string };
 const CATS: Record<"out" | "in" | "dad", Cat[]> = {
@@ -93,8 +92,8 @@ export default function Tracker() {
   const [userId, setUserId] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string>("");
   const [entries, setEntries] = useState<Entry[]>([]);
-  const [accounts, setAccounts] = useState<Accounts>({ paypal: 0, usbank: 0, clp: 0, rate: 942 });
-  const [balDraft, setBalDraft] = useState<{ paypal: string; usbank: string; clp: string } | null>(null);
+  const [accounts, setAccounts] = useState<Accounts>({ paypal: 0, usbank: 0, clp: 0, rate: 942, goal: 0 });
+  const [balDraft, setBalDraft] = useState<{ paypal: string; usbank: string; clp: string; goal: string } | null>(null);
   const [offset, setOffset] = useState(0);
   const [kind, setKind] = useState<"out" | "in" | "dad">("out");
   const [amount, setAmount] = useState("");
@@ -125,7 +124,7 @@ export default function Tracker() {
       if (!alive) return;
       if (e1 || e2) setBanner("Couldn't load your data. Reload the page to try again.");
       if (e) setEntries(e as Entry[]);
-      if (a) setAccounts({ paypal: Number(a.paypal) || 0, usbank: Number(a.usbank) || 0, clp: Number(a.clp) || 0, rate: Number(a.rate) || 942 });
+      if (a) setAccounts({ paypal: Number(a.paypal) || 0, usbank: Number(a.usbank) || 0, clp: Number(a.clp) || 0, rate: Number(a.rate) || 942, goal: Number(a.goal) || 0 });
       setLoaded(true);
 
       const channel = supabase
@@ -153,7 +152,7 @@ export default function Tracker() {
           (payload) => {
             const row = payload.new as any;
             if (!row) return;
-            setAccounts({ paypal: Number(row.paypal) || 0, usbank: Number(row.usbank) || 0, clp: Number(row.clp) || 0, rate: Number(row.rate) || 942 });
+            setAccounts({ paypal: Number(row.paypal) || 0, usbank: Number(row.usbank) || 0, clp: Number(row.clp) || 0, rate: Number(row.rate) || 942, goal: Number(row.goal) || 0 });
           }
         )
         .subscribe();
@@ -193,7 +192,7 @@ export default function Tracker() {
       return isFinite(v) ? v : 0;
     };
     return balDraft
-      ? { paypal: num(balDraft.paypal), usbank: num(balDraft.usbank), clp: num(balDraft.clp) }
+      ? { paypal: num(balDraft.paypal), usbank: num(balDraft.usbank), clp: num(balDraft.clp), goal: num(balDraft.goal) }
       : accounts;
   }
 
@@ -243,6 +242,7 @@ export default function Tracker() {
 
   const rateVal = accounts.rate > 0 ? accounts.rate : 942;
   const clpUsd = accounts.clp / rateVal;
+  const weeklyGoal = accounts.goal > 0 ? accounts.goal / 52 : 130;
 
   const barRows = useMemo(() => {
     const sums: Record<string, { amount: number; n: number }> = {};
@@ -277,7 +277,7 @@ export default function Tracker() {
 
   const goal = useMemo(() => {
     const banked = entries.reduce((s, e) => s + (e.kind === "in" ? e.amount : -e.amount), 0);
-    if (!entries.length || !firstDate) return { banked, weeks: [] as any[], maxV: GOAL, minV: 0, hit: 0 };
+    if (!entries.length || !firstDate) return { banked, weeks: [] as any[], maxV: weeklyGoal, minV: 0, hit: 0 };
 
     const nets: Record<string, number> = {};
     entries.forEach((e) => {
@@ -296,11 +296,11 @@ export default function Tracker() {
     }
     if (weeks.length > 12) weeks = weeks.slice(-12);
 
-    const hit = weeks.filter((w) => w.net >= GOAL).length;
-    const maxV = weeks.reduce((m, w) => Math.max(m, w.net), GOAL * 1.15);
+    const hit = weeks.filter((w) => w.net >= weeklyGoal).length;
+    const maxV = weeks.reduce((m, w) => Math.max(m, w.net), weeklyGoal * 1.15);
     const minV = weeks.reduce((m, w) => Math.min(m, w.net), 0);
     return { banked, weeks, maxV, minV, hit };
-  }, [entries, firstDate, range]);
+  }, [entries, firstDate, range, weeklyGoal]);
 
   function fillCats(k: "out" | "in" | "dad") {
     return CATS[k];
@@ -344,18 +344,18 @@ export default function Tracker() {
       (top, r) => (r.amount > (top?.amount ?? 0) ? r : top),
       null
     );
-    if (totals.net >= GOAL) {
-      return `You hit this week's ${fmtShort(GOAL)} goal, you kept ${fmt(totals.net)}. Keep this pace and that's about ${fmtShort(
-        GOAL * 4
-      )} saved a month toward next semester.`;
+    if (totals.net >= weeklyGoal) {
+      return `You're doing good! You hit this week's ${fmtShort(weeklyGoal)} goal and kept ${fmt(totals.net)}. Keep this pace and that's about ${fmtShort(
+        weeklyGoal * 4
+      )} saved a month toward your goal.`;
     }
     if (totals.net >= 0) {
-      const gap = GOAL - totals.net;
+      const gap = weeklyGoal - totals.net;
       const catMsg = topCat ? ` ${topCat.cat.label} was your biggest spend at ${fmt(topCat.amount)}, cutting back there next week would close most of the gap.` : "";
-      return `You're ${fmt(gap)} short of this week's ${fmtShort(GOAL)} goal.${catMsg}`;
+      return `Almost there, you're ${fmt(gap)} short of this week's ${fmtShort(weeklyGoal)} goal.${catMsg}`;
     }
     const catMsg = topCat ? ` Most of it went to ${topCat.cat.label} (${fmt(topCat.amount)}).` : "";
-    return `You spent ${fmt(-totals.net)} more than came in this week.${catMsg} Try trimming that next week so you don't fall further behind on your semester goal.`;
+    return `Watch out, you spent ${fmt(-totals.net)} more than came in this week.${catMsg} Try trimming that next week so you don't fall further behind on your goal.`;
   }
 
   const pct = totals.totIn > 0 ? Math.min(100, (totals.spent / totals.totIn) * 100) : totals.spent > 0 ? 100 : 0;
@@ -363,6 +363,7 @@ export default function Tracker() {
     paypal: accounts.paypal ? accounts.paypal.toFixed(2) : "",
     usbank: accounts.usbank ? accounts.usbank.toFixed(2) : "",
     clp: accounts.clp ? String(Math.round(accounts.clp)) : "",
+    goal: accounts.goal ? String(Math.round(accounts.goal)) : "",
   };
 
   const usualOut = TARGETS.transport + TARGETS.food;
@@ -685,12 +686,27 @@ export default function Tracker() {
         </section>
       </div>
 
-      <section className="panel card goal" aria-label="Tuition fund">
+      <section className="panel card goal" aria-label="Savings goal">
         <div className="cardhead">
-          <h2>Tuition fund</h2>
+          <h2>Savings goal</h2>
           <span className="meta">
-            {goal.weeks.length ? `${goal.hit} of ${goal.weeks.length} ${goal.weeks.length === 1 ? "week" : "weeks"} hit ${fmtShort(GOAL)}` : ""}
+            {goal.weeks.length ? `${goal.hit} of ${goal.weeks.length} ${goal.weeks.length === 1 ? "week" : "weeks"} hit ${fmtShort(weeklyGoal)}` : ""}
           </span>
+        </div>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
+          <span className="eyebrow">Yearly goal</span>
+          <span className="balwrap">
+            <span className="sym">$</span>
+            <input
+              className="bal num"
+              inputMode="decimal"
+              aria-label="Yearly savings goal"
+              value={draft.goal}
+              onChange={(e) => setBalDraft({ ...draft, goal: e.target.value })}
+              onBlur={saveBalances}
+            />
+          </span>
+          <span className="sub">about {fmtShort(weeklyGoal)} a week</span>
         </div>
         <div className="goaltop">
           <div>
@@ -701,10 +717,10 @@ export default function Tracker() {
             </div>
             <p className="herofoot">
               {!entries.length
-                ? `Aiming for ${fmtShort(GOAL)} a week. Log a few weeks and this shows how you're tracking.`
-                : totals.net >= GOAL
-                ? `This week you're ${fmt(totals.net - GOAL)} past the ${fmtShort(GOAL)} mark.`
-                : `${fmt(GOAL - totals.net)} more this week to reach ${fmtShort(GOAL)}. At ${fmtShort(GOAL)} a week that's ${fmtShort(GOAL * 4)} a month.`}
+                ? `Aiming for ${fmtShort(weeklyGoal)} a week. Log a few weeks and this shows how you're tracking.`
+                : totals.net >= weeklyGoal
+                ? `This week you're ${fmt(totals.net - weeklyGoal)} past the ${fmtShort(weeklyGoal)} mark.`
+                : `${fmt(weeklyGoal - totals.net)} more this week to reach ${fmtShort(weeklyGoal)}. At ${fmtShort(weeklyGoal)} a week that's ${fmtShort(weeklyGoal * 4)} a month.`}
             </p>
           </div>
           <div>
@@ -717,17 +733,17 @@ export default function Tracker() {
                     return (
                       <>
                         <div className="refline zero" style={{ bottom: pos(0) + "%" }} />
-                        <div className="refline target" style={{ bottom: pos(GOAL) + "%" }}>
-                          <span className="tag">{fmtShort(GOAL)} goal</span>
+                        <div className="refline target" style={{ bottom: pos(weeklyGoal) + "%" }}>
+                          <span className="tag">{fmtShort(weeklyGoal)} goal</span>
                         </div>
                         <div className="wkrow">
                           {goal.weeks.map((w) => {
                             const isNow = w.k === range.startKey;
-                            const color = w.net >= GOAL ? "var(--in)" : w.net >= 0 ? "color-mix(in srgb, var(--in) 42%, var(--surface))" : "var(--out)";
+                            const color = w.net >= weeklyGoal ? "var(--in)" : w.net >= 0 ? "color-mix(in srgb, var(--in) 42%, var(--surface))" : "var(--out)";
                             const end = new Date(w.start);
                             end.setDate(end.getDate() + 6);
                             const t = `${shortDate(w.start)}–${shortDate(end)} · kept ${w.net < 0 ? "−" : ""}${fmt(Math.abs(w.net))} · ${
-                              w.net >= GOAL ? "hit the goal" : fmt(GOAL - w.net) + " short"
+                              w.net >= weeklyGoal ? "hit the goal" : fmt(weeklyGoal - w.net) + " short"
                             }`;
                             return (
                               <div className="wk" key={w.k} title={t}>
