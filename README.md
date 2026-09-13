@@ -1,6 +1,6 @@
 # Week in, Week out
 
-Your own weekly money tracker — same tracker as the Claude artifact, as a real site you own and can put on Vercel.
+Your own weekly money tracker — accounts, weekly in/out, category targets, and a tuition fund chart, as a real site you own and can put on Vercel.
 
 ## 1. Create a free Supabase project
 
@@ -60,8 +60,7 @@ This app is gated by a single shared passcode, not a real login system — good 
 - The Supabase anon key ships in the browser (that's normal for Supabase apps), and the database policies in `schema.sql` allow full read/write with that key — so anyone who both learns your passcode *and* inspects the network requests could read the Supabase URL/key directly. Keep the URL and passcode private, the same way you'd protect a shared budgeting spreadsheet.
 - If you ever want this locked down further (e.g. real email/password login, or a server-side proxy so the Supabase key never reaches the browser), that's a follow-up worth asking for — it's a bigger change than this first version.
 
-## What's different from the Claude artifact version
+## Notes
 
-- Data lives in your own Supabase project instead of Claude's artifact storage — same real-time sync across devices, but you own the database.
-- Hover tooltips on the charts are simplified to native browser tooltips (hover and wait a moment) instead of the custom styled ones.
-- Everything else — accounts, weekly view, categories with targets, the tuition fund chart — works the same way.
+- Data lives in your own Supabase project, synced in real time across any device you log into.
+- Hover over the charts for a moment to see the tooltip with exact numbers.
