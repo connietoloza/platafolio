@@ -78,7 +78,7 @@ function BowIcon() {
       />
       <path d="M23.3 17.6 Q25.5 15.9 27.7 17.6" stroke="#3A2A1E" strokeWidth="1.1" fill="none" strokeLinecap="round" />
       <path
-        d="M27.7 17.3 L28.5 14.5 M27.9 17.7 L29.4 15.2 M27.9 18.2 L30.2 16.1 M27.7 18.6 L30.5 17.6"
+        d="M28.0 17.4 L30.8 15.7 M28.2 18.0 L31.1 17.2 M27.9 18.5 L30.6 18.8"
         stroke="#3A2A1E"
         strokeWidth="0.85"
         strokeLinecap="round"
@@ -336,6 +336,26 @@ export default function Tracker() {
     if (totals.totIn === 0) return `Spent ${fmt(totals.spent)} with nothing in yet.`;
     if (totals.net >= 0) return `You've used ${Math.round((totals.spent / totals.totIn) * 100)}% of what came in.`;
     return `Spending is ${fmt(-totals.net)} past this week's income.`;
+  }
+
+  function recommendation() {
+    if (!week.length) return "Log a few things this week and I'll tell you exactly what to adjust to hit your goal.";
+    const topCat = barRows.rows.reduce<typeof barRows.rows[number] | null>(
+      (top, r) => (r.amount > (top?.amount ?? 0) ? r : top),
+      null
+    );
+    if (totals.net >= GOAL) {
+      return `You hit this week's ${fmtShort(GOAL)} goal, you kept ${fmt(totals.net)}. Keep this pace and that's about ${fmtShort(
+        GOAL * 4
+      )} saved a month toward next semester.`;
+    }
+    if (totals.net >= 0) {
+      const gap = GOAL - totals.net;
+      const catMsg = topCat ? ` ${topCat.cat.label} was your biggest spend at ${fmt(topCat.amount)}, cutting back there next week would close most of the gap.` : "";
+      return `You're ${fmt(gap)} short of this week's ${fmtShort(GOAL)} goal.${catMsg}`;
+    }
+    const catMsg = topCat ? ` Most of it went to ${topCat.cat.label} (${fmt(topCat.amount)}).` : "";
+    return `You spent ${fmt(-totals.net)} more than came in this week.${catMsg} Try trimming that next week so you don't fall further behind on your semester goal.`;
   }
 
   const pct = totals.totIn > 0 ? Math.min(100, (totals.spent / totals.totIn) * 100) : totals.spent > 0 ? 100 : 0;
@@ -744,6 +764,15 @@ export default function Tracker() {
             </div>
           </div>
         </div>
+      </section>
+
+      <section className="panel card" aria-label="Recommendation for the week">
+        <div className="cardhead">
+          <h2>Recommendation for the week</h2>
+        </div>
+        <p className="herofoot" style={{ maxWidth: "none" }}>
+          {recommendation()}
+        </p>
       </section>
 
       <footer className="note">Entries and balances save automatically and sync from any device you log into.</footer>

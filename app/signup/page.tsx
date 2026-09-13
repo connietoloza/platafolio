@@ -53,7 +53,7 @@ export default function SignupPage() {
             <path d="M12.3 17.6 Q14.5 15.9 16.7 17.6" stroke="#3A2A1E" strokeWidth="1.1" fill="none" strokeLinecap="round" />
             <path d="M12.0 17.4 L9.2 15.7 M11.8 18.0 L8.9 17.2 M12.1 18.5 L9.4 18.8" stroke="#3A2A1E" strokeWidth="0.8" strokeLinecap="round" />
             <path d="M23.3 17.6 Q25.5 15.9 27.7 17.6" stroke="#3A2A1E" strokeWidth="1.1" fill="none" strokeLinecap="round" />
-            <path d="M27.7 17.3 L28.5 14.5 M27.9 17.7 L29.4 15.2 M27.9 18.2 L30.2 16.1 M27.7 18.6 L30.5 17.6" stroke="#3A2A1E" strokeWidth="0.85" strokeLinecap="round" />
+            <path d="M28.0 17.4 L30.8 15.7 M28.2 18.0 L31.1 17.2 M27.9 18.5 L30.6 18.8" stroke="#3A2A1E" strokeWidth="0.85" strokeLinecap="round" />
             <path d="M16.5 23.3 Q20 27.5 23.5 23.3" stroke="#C2454F" strokeWidth="1.3" fill="none" strokeLinecap="round" />
           </svg>
           by Connie Toloza
