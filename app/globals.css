@@ -87,6 +87,7 @@ header h1 { font-size: 32px; font-weight: 400; letter-spacing: .03em; color: var
 .weeknav button:hover:not([disabled]) { border-color: var(--accent); color: var(--accent); }
 .weeknav button[disabled] { opacity: .38; cursor: default; }
 .weeknav .arrow { padding: 7px 11px; border-radius: 50%; }
+.weeknav button:not(.arrow) { white-space: nowrap; }
 .headtop { display: flex; align-items: center; gap: 10px; }
 .logout { font-size: 12px; color: var(--muted); background: none; border: 0; cursor: pointer; text-decoration: underline; padding: 0; }
 
@@ -115,6 +116,7 @@ input.bal:focus { border-bottom-color: var(--accent); }
 /* ---------- week panel ---------- */
 .week { padding: 22px 24px; }
 .weektop { text-align: center; margin-bottom: 14px; }
+.weekgrowth { font-size: 12px; color: var(--muted); margin: 3px 0 0; }
 .weekstats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
 .stat { background: var(--surface-2); border-radius: 16px; padding: 14px 8px; text-align: center; }
 .statlbl { display: block; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }

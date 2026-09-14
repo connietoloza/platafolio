@@ -281,6 +281,13 @@ export default function Tracker() {
     return { earned, fromDad, spent, totIn, net: totIn - spent };
   }, [week]);
 
+  const lastWeekRange = useMemo(() => weekRange(offset - 1), [offset]);
+  const lastWeekNet = useMemo(() => {
+    return entries
+      .filter((e) => e.date >= lastWeekRange.startKey && e.date <= lastWeekRange.endKey)
+      .reduce((s, e) => s + (e.kind === "out" ? -e.amount : e.amount), 0);
+  }, [entries, lastWeekRange]);
+
   const sinceFlow = useMemo(() => entries.reduce((s, e) => s + (e.kind === "in" ? e.amount : -e.amount), 0), [entries]);
   const firstDate = useMemo(
     () => (entries.length ? entries.reduce((a, e) => (e.date < a ? e.date : a), entries[0].date) : null),
@@ -438,7 +445,7 @@ export default function Tracker() {
             ‹
           </button>
           <button disabled={offset === 0} onClick={() => setOffset(0)}>
-            This week
+            {offset === 0 ? "This week" : `${shortDate(range.start)} – ${shortDate(range.end)}`}
           </button>
           <button className="arrow" aria-label="Next week" disabled={offset >= 0} onClick={() => setOffset((o) => Math.min(0, o + 1))}>
             ›
@@ -516,6 +523,12 @@ export default function Tracker() {
             {shortDate(range.start)} – {shortDate(range.end)}
             {offset === 0 ? " · this week" : ""}
           </span>
+          {week.length > 0 && (
+            <p className="weekgrowth">
+              {totals.net >= lastWeekNet ? "▲" : "▼"} {totals.net >= lastWeekNet ? "up" : "down"} {fmt(Math.abs(totals.net - lastWeekNet))} vs
+              the week before
+            </p>
+          )}
         </div>
         <div className="weekstats">
           <div className="stat">
