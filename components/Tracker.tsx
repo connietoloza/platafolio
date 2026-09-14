@@ -134,6 +134,8 @@ export default function Tracker() {
   const [goalName, setGoalName] = useState("");
   const [goalTarget, setGoalTarget] = useState("");
   const [goalBy, setGoalBy] = useState("");
+  const [whatIfWeekly, setWhatIfWeekly] = useState("130");
+  const [whatIfDate, setWhatIfDate] = useState("2026-12-31");
   const [offset, setOffset] = useState(0);
   const [kind, setKind] = useState<"out" | "in" | "dad">("out");
   const [amount, setAmount] = useState("");
@@ -359,9 +361,20 @@ export default function Tracker() {
       .reduce((s, e) => s + (e.kind === "out" ? -e.amount : e.amount), 0);
     return currentTotal - laterFlow;
   }, [entries, range, currentTotal]);
+  const whatIfProjection = useMemo(() => {
+    const weekly = Math.abs(parseFloat(whatIfWeekly)) || 0;
+    if (!whatIfDate) return null;
+    const target = parseKey(whatIfDate);
+    const days = Math.ceil((target.getTime() - Date.now()) / 86400000);
+    if (days <= 0) return null;
+    const weeksLeft = days / 7;
+    return currentTotal + weekly * weeksLeft;
+  }, [whatIfWeekly, whatIfDate, currentTotal]);
+
   const totalGoalTarget = goals.reduce((s, g) => s + g.target, 0);
   const totalGoalSaved = goals.reduce((s, g) => s + g.saved, 0);
-  const weeklyGoal = totalGoalTarget > 0 ? totalGoalTarget / 52 : 130;
+  const weeklyGoalSum = goals.reduce((s, g) => s + (g.by ? weeklyNeeded(g) || 0 : g.target / 52), 0);
+  const weeklyGoal = weeklyGoalSum > 0 ? weeklyGoalSum : 130;
 
   const barRows = useMemo(() => {
     const sums: Record<string, { amount: number; n: number }> = {};
@@ -944,6 +957,31 @@ export default function Tracker() {
             Add goal
           </button>
         </form>
+      </section>
+
+      <section className="panel card whatif" aria-label="What if calculator">
+        <div className="cardhead">
+          <h2>What if?</h2>
+        </div>
+        <p className="whatifrow">
+          If I save
+          <span className="field amt whatifamt">
+            <span className="cur">$</span>
+            <input
+              inputMode="decimal"
+              aria-label="Weekly amount to save"
+              value={whatIfWeekly}
+              onChange={(e) => setWhatIfWeekly(e.target.value)}
+            />
+          </span>
+          a week starting now, until
+          <span className="field by whatifdate">
+            <input type="date" aria-label="Until this date" value={whatIfDate} onChange={(e) => setWhatIfDate(e.target.value)} />
+          </span>
+        </p>
+        <p className="whatifresult">
+          {whatIfProjection === null ? "Pick a date after today." : <>you'd have <b>{fmt(whatIfProjection)}</b> total by then.</>}
+        </p>
       </section>
 
       <section className="panel card advisor" aria-label="Mason's recommendation">

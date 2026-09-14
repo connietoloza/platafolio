@@ -178,6 +178,15 @@ form.add {
 .advisor .advisortext { flex: 1; min-width: 0; }
 .advisor .cardhead { margin-bottom: 8px; }
 
+.whatifrow {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+  font-size: 14px; color: var(--ink-2); font-weight: 600;
+}
+.whatifamt { width: 90px; }
+.whatifdate input[type="date"] { color: var(--ink-2); font-size: 13px; }
+.whatifresult { margin-top: 12px; font-size: 15px; color: var(--ink); }
+.whatifresult b { font-family: "IBM Plex Mono", monospace; color: var(--accent); font-size: 17px; }
+
 .bars { display: grid; gap: 12px; }
 .barrow { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; }
 .barrow .name { font-size: 13px; color: var(--ink-2); display: flex; align-items: center; gap: 7px; min-width: 0; font-weight: 600; }
