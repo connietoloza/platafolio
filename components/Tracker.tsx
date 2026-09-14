@@ -374,19 +374,6 @@ export default function Tracker() {
     setNote("");
   }
 
-  function heroFoot() {
-    if (!week.length) return offset === 0 ? "Add what you spent or earned below and this fills in." : "Nothing was logged this week.";
-    if (totals.totIn === 0) return "No money in yet this week. This is spending only so far.";
-    if (totals.net >= 0) return "That's what's still yours out of what came in this week.";
-    return "You've spent more than came in this week, so the rest is coming out of savings.";
-  }
-  function trackCap() {
-    if (!week.length) return "Nothing in, nothing out.";
-    if (totals.totIn === 0) return `Spent ${fmt(totals.spent)} with nothing in yet.`;
-    if (totals.net >= 0) return `You've used ${Math.round((totals.spent / totals.totIn) * 100)}% of what came in.`;
-    return `Spending is ${fmt(-totals.net)} past this week's income.`;
-  }
-
   function recommendation() {
     if (!week.length) return "Log a few things this week and I'll tell you exactly what to adjust to hit your goal.";
     const topCat = barRows.rows.reduce<typeof barRows.rows[number] | null>(
@@ -524,51 +511,37 @@ export default function Tracker() {
       </section>
 
       <section className="panel week" aria-label="This week's summary">
-        <div className="hero">
-          <span className="eyebrow">Left this week</span>
-          <div className={"big num " + (totals.net > 0 ? "pos" : totals.net < 0 ? "neg" : "zero")}>
-            {totals.net < 0 ? "−" : ""}
-            {fmt(Math.abs(totals.net))}
-          </div>
-          <div className="range">
+        <div className="weektop">
+          <span className="eyebrow">
             {shortDate(range.start)} – {shortDate(range.end)}
             {offset === 0 ? " · this week" : ""}
-          </div>
-          <p className="herofoot">{heroFoot()}</p>
+          </span>
         </div>
-        <div className="flow">
-          <div className="flowline">
-            <span className="lbl">
-              <i className="dotmark" style={{ background: "var(--in)" }} />
-              You earned
-            </span>
-            <span className="val num">{fmt(totals.earned)}</span>
+        <div className="weekstats">
+          <div className="stat">
+            <span className="statlbl">Spent</span>
+            <div className="statnum out num">{fmt(totals.spent)}</div>
           </div>
-          {totals.fromDad > 0 && (
-            <div className="flowline">
-              <span className="lbl">
-                <i className="dotmark" style={{ background: "var(--accent)" }} />
-                Zelled to my bank account from dad
-              </span>
-              <span className="val num">{fmt(totals.fromDad)}</span>
+          <div className="stat">
+            <span className="statlbl">Earned</span>
+            <div className="statnum in num">{fmt(totals.totIn)}</div>
+            {totals.fromDad > 0 && <span className="statsub">incl. {fmt(totals.fromDad)} from dad</span>}
+          </div>
+          <div className="stat">
+            <span className="statlbl">Saved</span>
+            <div className={"statnum num " + (totals.net >= 0 ? "in" : "out")}>
+              {totals.net < 0 ? "−" : ""}
+              {fmt(Math.abs(totals.net))}
             </div>
-          )}
-          <div className="track">
-            <div className={"fill" + (totals.spent > totals.totIn && totals.spent > 0 ? " over" : "")} style={{ width: pct + "%" }} />
           </div>
-          <div className="flowline">
-            <span className="lbl">
-              <i className="dotmark" style={{ background: "var(--out)" }} />
-              Went out
-            </span>
-            <span className="val num">{fmt(totals.spent)}</span>
-          </div>
-          <p className="trackcap">{trackCap()}</p>
-          <p className="usual">
-            Your usual week: about {fmtShort(USUAL_IN)} in, {fmtShort(TARGETS.transport)} gas + {fmtShort(TARGETS.food)} food, roughly{" "}
-            {fmtShort(USUAL_IN - usualOut)} left over.
-          </p>
         </div>
+        <div className="track">
+          <div className={"fill" + (totals.spent > totals.totIn && totals.spent > 0 ? " over" : "")} style={{ width: pct + "%" }} />
+        </div>
+        <p className="usual">
+          Your usual week: about {fmtShort(USUAL_IN)} in, {fmtShort(TARGETS.transport)} gas + {fmtShort(TARGETS.food)} food, roughly{" "}
+          {fmtShort(USUAL_IN - usualOut)} left over.
+        </p>
       </section>
 
       <form className="panel add" onSubmit={submit} autoComplete="off">

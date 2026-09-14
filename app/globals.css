@@ -113,27 +113,20 @@ input.bal:focus { border-bottom-color: var(--accent); }
 }
 
 /* ---------- week panel ---------- */
-.week { display: grid; grid-template-columns: minmax(210px, 300px) 1fr; gap: 28px; padding: 22px 24px; align-items: center; }
-.hero .range { font-size: 13px; color: var(--muted); margin-top: 2px; }
-.big {
-  font-family: "Baloo 2", sans-serif; font-weight: 800;
-  font-size: clamp(38px, 9vw, 54px); line-height: 1.02; letter-spacing: -.02em;
-  font-variant-numeric: tabular-nums; margin-top: 6px;
-}
-.big.pos { color: var(--in); }
-.big.neg { color: var(--out); }
-.big.zero { color: var(--ink); }
+.week { padding: 22px 24px; }
+.weektop { text-align: center; margin-bottom: 14px; }
+.weekstats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+.stat { background: var(--surface-2); border-radius: 16px; padding: 14px 8px; text-align: center; }
+.statlbl { display: block; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.statnum { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: clamp(18px, 5vw, 24px); letter-spacing: -.01em; }
+.statnum.out { color: var(--out); }
+.statnum.in { color: var(--in); }
+.statsub { display: block; font-size: 10px; color: var(--muted); margin-top: 3px; }
 .herofoot { font-size: 13px; color: var(--muted); margin: 6px 0 0; max-width: 32ch; }
-
-.flow { display: grid; gap: 9px; }
-.flowline { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; font-size: 13px; }
-.flowline .lbl { color: var(--muted); display: flex; align-items: center; gap: 7px; font-weight: 600; }
 .dotmark { width: 8px; height: 8px; border-radius: 50%; flex: none; }
-.flowline .val { font-size: 15px; font-weight: 700; }
-.track { position: relative; height: 14px; border-radius: 999px; background: var(--in-soft); overflow: hidden; border: 1px solid var(--line); }
+.track { position: relative; height: 14px; border-radius: 999px; background: var(--in-soft); overflow: hidden; border: 1px solid var(--line); margin-bottom: 10px; }
 .fill { position: absolute; inset: 0 auto 0 0; background: var(--out); border-radius: 999px; transition: width .35s ease; }
 .fill.over { background: repeating-linear-gradient(135deg, var(--out) 0 6px, color-mix(in srgb, var(--out) 68%, #000) 6px 12px); }
-.trackcap { font-size: 12px; color: var(--muted); }
 .usual { font-size: 12px; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 8px; margin: 2px 0 0; }
 
 /* ---------- add form ---------- */
@@ -283,7 +276,6 @@ footer.note { margin-top: 20px; font-size: 12.5px; color: var(--muted); }
   form.add { grid-template-columns: 1fr 1fr; }
   form.add .seg, form.add .f-note, .addbtn { grid-column: 1 / -1; }
   .cols { grid-template-columns: 1fr; }
-  .week { grid-template-columns: 1fr; gap: 20px; }
   .goaltop { grid-template-columns: 1fr; gap: 20px; }
 }
 @media (max-width: 520px) {
