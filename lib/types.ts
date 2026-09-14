@@ -22,5 +22,6 @@ export type Goal = {
   name: string;
   target: number;
   saved: number;
+  by: string | null; // YYYY-MM-DD, optional target date
   ts: number;
 };

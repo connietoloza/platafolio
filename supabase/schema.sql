@@ -27,6 +27,7 @@ create table if not exists goals (
   name text not null,
   target numeric not null default 0,
   saved numeric not null default 0,
+  by text,
   ts bigint not null
 );
 

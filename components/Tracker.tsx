@@ -87,6 +87,47 @@ function BowIcon() {
   );
 }
 
+function AdvisorGirl() {
+  return (
+    <svg width="86" height="136" viewBox="0 0 92 145" aria-hidden="true" className="advisorgirl">
+      <rect x="40" y="28" width="12" height="14" fill="#FBDCC4" />
+      <path d="M28 40 Q46 32 64 40 L76 128 Q46 140 16 128 Z" fill="#C2185B" />
+      <path d="M28 40 Q46 32 64 40 L68 54 Q46 46 24 54 Z" fill="#E24A82" />
+      <path d="M40 42 L46 48 L52 42 L46 38 Z" fill="#FBD5E6" />
+      <ellipse cx="22" cy="50" rx="7" ry="12" fill="#E24A82" />
+      <ellipse cx="70" cy="50" rx="7" ry="12" fill="#E24A82" />
+      <g transform="translate(26,0)">
+        <path
+          d="M9 8 Q20 -1 31 8 Q32 18 31 25 Q31 31 25 31 L15 31 Q9 31 9 25 Q8 18 9 8 Z"
+          fill="#A97C3F"
+        />
+        <ellipse cx="20" cy="17" rx="9.5" ry="10.5" fill="#FBDCC4" />
+        <path
+          d="M10.5 9 Q20 2.5 29.5 9 Q29.5 13 26 12 Q20 9 14 12 Q10.5 13 10.5 9 Z"
+          fill="#C79B52"
+        />
+        <circle cx="14.5" cy="20.5" r="1.7" fill="var(--accent)" opacity="0.45" />
+        <circle cx="25.5" cy="20.5" r="1.7" fill="var(--accent)" opacity="0.45" />
+        <path d="M12.3 17.6 Q14.5 15.9 16.7 17.6" stroke="#3A2A1E" strokeWidth="1.1" fill="none" strokeLinecap="round" />
+        <path
+          d="M12.0 17.4 L9.2 15.7 M11.8 18.0 L8.9 17.2 M12.1 18.5 L9.4 18.8"
+          stroke="#3A2A1E"
+          strokeWidth="0.8"
+          strokeLinecap="round"
+        />
+        <path d="M23.3 17.6 Q25.5 15.9 27.7 17.6" stroke="#3A2A1E" strokeWidth="1.1" fill="none" strokeLinecap="round" />
+        <path
+          d="M28.0 17.4 L30.8 15.7 M28.2 18.0 L31.1 17.2 M27.9 18.5 L30.6 18.8"
+          stroke="#3A2A1E"
+          strokeWidth="0.85"
+          strokeLinecap="round"
+        />
+        <path d="M16.5 23.3 Q20 27.5 23.5 23.3" stroke="#C2454F" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+      </g>
+    </svg>
+  );
+}
+
 export default function Tracker() {
   const [supabase] = useState(() => createClient());
   const [userId, setUserId] = useState<string | null>(null);
@@ -97,6 +138,7 @@ export default function Tracker() {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [goalName, setGoalName] = useState("");
   const [goalTarget, setGoalTarget] = useState("");
+  const [goalBy, setGoalBy] = useState("");
   const [offset, setOffset] = useState(0);
   const [kind, setKind] = useState<"out" | "in" | "dad">("out");
   const [amount, setAmount] = useState("");
@@ -223,10 +265,11 @@ export default function Tracker() {
     if (!userId) return;
     const target = Math.abs(parseFloat(goalTarget.replace(/[^0-9.-]/g, "")));
     if (!goalName.trim() || !target || !isFinite(target)) return;
-    const g: Goal = { id: localId(), user_id: userId, name: goalName.trim(), target, saved: 0, ts: Date.now() };
+    const g: Goal = { id: localId(), user_id: userId, name: goalName.trim(), target, saved: 0, by: goalBy || null, ts: Date.now() };
     setGoals((prev) => [...prev, g]);
     setGoalName("");
     setGoalTarget("");
+    setGoalBy("");
     const { error } = await supabase.from("goals").insert(g);
     if (error) setBanner("That didn't save. Check your connection and try again.");
   }
@@ -236,6 +279,24 @@ export default function Tracker() {
     setGoals((prev) => prev.map((g) => (g.id === id ? { ...g, saved } : g)));
     const { error } = await supabase.from("goals").update({ saved }).eq("id", id);
     if (error) setBanner("That didn't save. Check your connection and try again.");
+  }
+
+  async function updateGoalBy(id: string, value: string) {
+    const by = value || null;
+    setGoals((prev) => prev.map((g) => (g.id === id ? { ...g, by } : g)));
+    const { error } = await supabase.from("goals").update({ by }).eq("id", id);
+    if (error) setBanner("That didn't save. Check your connection and try again.");
+  }
+
+  function weeklyNeeded(g: Goal) {
+    if (!g.by) return null;
+    const target = parseKey(g.by);
+    const days = Math.ceil((target.getTime() - Date.now()) / 86400000);
+    if (days <= 0) return null;
+    const weeksLeft = Math.max(1, days / 7);
+    const remaining = g.target - g.saved;
+    if (remaining <= 0) return 0;
+    return remaining / weeksLeft;
   }
 
   async function removeGoal(id: string) {
@@ -296,6 +357,13 @@ export default function Tracker() {
 
   const rateVal = accounts.rate > 0 ? accounts.rate : 942;
   const clpUsd = accounts.clp / rateVal;
+  const currentTotal = accounts.paypal + accounts.usbank + clpUsd;
+  const totalAsOfWeekEnd = useMemo(() => {
+    const laterFlow = entries
+      .filter((e) => e.date > range.endKey)
+      .reduce((s, e) => s + (e.kind === "out" ? -e.amount : e.amount), 0);
+    return currentTotal - laterFlow;
+  }, [entries, range, currentTotal]);
   const totalGoalTarget = goals.reduce((s, g) => s + g.target, 0);
   const totalGoalSaved = goals.reduce((s, g) => s + g.saved, 0);
   const weeklyGoal = totalGoalTarget > 0 ? totalGoalTarget / 52 : 130;
@@ -512,7 +580,7 @@ export default function Tracker() {
         </div>
         <div className="acct total">
           <span className="who">All together</span>
-          <div className="amount">{fmt(accounts.paypal + accounts.usbank + clpUsd)}</div>
+          <div className="amount">{fmt(currentTotal)}</div>
           <span className="sub">at {pesos.format(rateVal)} CLP to the dollar</span>
         </div>
       </section>
@@ -523,12 +591,15 @@ export default function Tracker() {
             {shortDate(range.start)} – {shortDate(range.end)}
             {offset === 0 ? " · this week" : ""}
           </span>
-          {week.length > 0 && (
-            <p className="weekgrowth">
-              {totals.net >= lastWeekNet ? "▲" : "▼"} {totals.net >= lastWeekNet ? "up" : "down"} {fmt(Math.abs(totals.net - lastWeekNet))} vs
-              the week before
-            </p>
-          )}
+          <p className="weekgrowth">
+            {fmt(totalAsOfWeekEnd)} total as of then
+            {week.length > 0 && (
+              <>
+                {" "}
+                · {totals.net >= lastWeekNet ? "▲" : "▼"} {fmt(Math.abs(totals.net - lastWeekNet))} vs the week before
+              </>
+            )}
+          </p>
         </div>
         <div className="weekstats">
           <div className="stat">
@@ -811,6 +882,7 @@ export default function Tracker() {
         ) : (
           goals.map((g) => {
             const pct = g.target > 0 ? Math.min(100, (g.saved / g.target) * 100) : 0;
+            const need = weeklyNeeded(g);
             return (
               <div className="goalrow" key={g.id}>
                 <span className="gname">{g.name}</span>
@@ -829,6 +901,22 @@ export default function Tracker() {
                 </button>
                 <div className="goalbar">
                   <div className="goalfill" style={{ width: Math.max(2, pct) + "%" }} />
+                </div>
+                <div className="goalby">
+                  <label>
+                    by
+                    <input
+                      type="date"
+                      aria-label={`Target date for ${g.name}`}
+                      defaultValue={g.by || ""}
+                      onChange={(e) => updateGoalBy(g.id, e.target.value)}
+                    />
+                  </label>
+                  {g.by && (
+                    <span className="goalneed">
+                      {need === null ? "date's passed" : need === 0 ? "already there!" : `${fmt(need)}/week to make it`}
+                    </span>
+                  )}
                 </div>
               </div>
             );
@@ -853,19 +941,26 @@ export default function Tracker() {
               onChange={(e) => setGoalTarget(e.target.value)}
             />
           </label>
+          <label className="field by">
+            <span className="cur">by</span>
+            <input type="date" aria-label="Goal target date" value={goalBy} onChange={(e) => setGoalBy(e.target.value)} />
+          </label>
           <button className="addbtn" type="submit" disabled={!goalName.trim() || !goalTarget}>
             Add goal
           </button>
         </form>
       </section>
 
-      <section className="panel card" aria-label="Recommendation for the week">
-        <div className="cardhead">
-          <h2>Recommendation for the week</h2>
+      <section className="panel card advisor" aria-label="Recommendation for the week">
+        <AdvisorGirl />
+        <div className="advisortext">
+          <div className="cardhead">
+            <h2>Recommendation for the week</h2>
+          </div>
+          <p className="herofoot" style={{ maxWidth: "none" }}>
+            {recommendation()}
+          </p>
         </div>
-        <p className="herofoot" style={{ maxWidth: "none" }}>
-          {recommendation()}
-        </p>
       </section>
 
       <footer className="note">Entries and balances save automatically and sync from any device you log into.</footer>

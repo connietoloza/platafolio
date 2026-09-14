@@ -173,6 +173,11 @@ form.add {
 .cardhead { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
 .cardhead .meta { font-size: 12px; color: var(--muted); }
 
+.advisor { display: flex; align-items: center; gap: 18px; }
+.advisor .advisorgirl { flex: none; }
+.advisor .advisortext { flex: 1; min-width: 0; }
+.advisor .cardhead { margin-bottom: 8px; }
+
 .bars { display: grid; gap: 12px; }
 .barrow { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; }
 .barrow .name { font-size: 13px; color: var(--ink-2); display: flex; align-items: center; gap: 7px; min-width: 0; font-weight: 600; }
@@ -203,9 +208,22 @@ form.add {
 .goaldel:hover { color: var(--out); background: var(--out-soft); }
 .goalbar { grid-column: 1 / -1; position: relative; height: 8px; background: var(--surface-2); border-radius: 999px; overflow: hidden; }
 .goalfill { position: absolute; inset: 0 auto 0 0; height: 100%; background: var(--accent); border-radius: 999px; transition: width .3s ease; }
+.goalby {
+  grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  font-size: 11.5px; color: var(--muted); margin-top: 2px;
+}
+.goalby label { display: flex; align-items: center; gap: 4px; }
+.goalby input[type="date"] {
+  font: inherit; font-size: 11.5px; color: var(--ink-2); background: var(--surface-2);
+  border: 1px solid var(--line); border-radius: 8px; padding: 2px 6px;
+}
+.goalneed { font-weight: 700; color: var(--accent); }
 .goaladd { margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap; }
 .goaladd .field { flex: 2; min-width: 130px; }
 .goaladd .field.amt { flex: 1; min-width: 90px; }
+.goaladd .field.by { flex: 1; min-width: 120px; }
+.goaladd .field.by .cur { font-family: inherit; font-size: 13px; }
+.goaladd .field.by input[type="date"] { color: var(--ink-2); font-size: 13px; }
 
 /* ---------- entries ---------- */
 .daygroup + .daygroup { margin-top: 14px; }
@@ -285,6 +303,8 @@ footer.note { margin-top: 20px; font-size: 12.5px; color: var(--muted); }
   .weeknav { width: 100%; }
   .weeknav button:not(.arrow) { flex: 1; }
   .seg { overflow-x: auto; }
+  .advisor { flex-direction: column; text-align: center; }
+  .advisor .cardhead { justify-content: center; }
 }
 
 /* ---------- login ---------- */
