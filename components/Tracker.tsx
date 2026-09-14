@@ -87,43 +87,38 @@ function BowIcon() {
   );
 }
 
-function AdvisorGirl() {
+function MasonIcon() {
+  const furBrown = "#C08A4E";
+  const furShade = "#A9723A";
+  const ivory = "#FDF8F3";
+  const dark = "#3A2A1E";
+  const pink = "#E24A82";
   return (
-    <svg width="86" height="136" viewBox="0 0 92 145" aria-hidden="true" className="advisorgirl">
-      <rect x="40" y="28" width="12" height="14" fill="#FBDCC4" />
-      <path d="M28 40 Q46 32 64 40 L76 128 Q46 140 16 128 Z" fill="#C2185B" />
-      <path d="M28 40 Q46 32 64 40 L68 54 Q46 46 24 54 Z" fill="#E24A82" />
-      <path d="M40 42 L46 48 L52 42 L46 38 Z" fill="#FBD5E6" />
-      <ellipse cx="22" cy="50" rx="7" ry="12" fill="#E24A82" />
-      <ellipse cx="70" cy="50" rx="7" ry="12" fill="#E24A82" />
-      <g transform="translate(26,0)">
-        <path
-          d="M9 8 Q20 -1 31 8 Q32 18 31 25 Q31 31 25 31 L15 31 Q9 31 9 25 Q8 18 9 8 Z"
-          fill="#A97C3F"
-        />
-        <ellipse cx="20" cy="17" rx="9.5" ry="10.5" fill="#FBDCC4" />
-        <path
-          d="M10.5 9 Q20 2.5 29.5 9 Q29.5 13 26 12 Q20 9 14 12 Q10.5 13 10.5 9 Z"
-          fill="#C79B52"
-        />
-        <circle cx="14.5" cy="20.5" r="1.7" fill="var(--accent)" opacity="0.45" />
-        <circle cx="25.5" cy="20.5" r="1.7" fill="var(--accent)" opacity="0.45" />
-        <path d="M12.3 17.6 Q14.5 15.9 16.7 17.6" stroke="#3A2A1E" strokeWidth="1.1" fill="none" strokeLinecap="round" />
-        <path
-          d="M12.0 17.4 L9.2 15.7 M11.8 18.0 L8.9 17.2 M12.1 18.5 L9.4 18.8"
-          stroke="#3A2A1E"
-          strokeWidth="0.8"
-          strokeLinecap="round"
-        />
-        <path d="M23.3 17.6 Q25.5 15.9 27.7 17.6" stroke="#3A2A1E" strokeWidth="1.1" fill="none" strokeLinecap="round" />
-        <path
-          d="M28.0 17.4 L30.8 15.7 M28.2 18.0 L31.1 17.2 M27.9 18.5 L30.6 18.8"
-          stroke="#3A2A1E"
-          strokeWidth="0.85"
-          strokeLinecap="round"
-        />
-        <path d="M16.5 23.3 Q20 27.5 23.5 23.3" stroke="#C2454F" strokeWidth="1.3" fill="none" strokeLinecap="round" />
-      </g>
+    <svg width="96" height="108" viewBox="0 0 100 112" aria-hidden="true" className="masonicon">
+      <path d="M22 34 Q9 44 15 64 Q24 68 29 54 Q27 40 22 34 Z" fill={furShade} />
+      <path d="M78 34 Q91 44 85 64 Q76 68 71 54 Q73 40 78 34 Z" fill={furShade} />
+      <ellipse cx="50" cy="82" rx="32" ry="26" fill={furBrown} />
+      <ellipse cx="50" cy="94" rx="20" ry="15" fill={ivory} />
+      <ellipse cx="33" cy="105" rx="8" ry="6" fill={ivory} />
+      <ellipse cx="67" cy="105" rx="8" ry="6" fill={ivory} />
+      <circle cx="50" cy="46" r="30" fill={furBrown} />
+      <ellipse cx="50" cy="58" rx="20" ry="15" fill={ivory} />
+      <path d="M38 24 Q50 19 62 24" stroke={furShade} strokeWidth="2.2" fill="none" strokeLinecap="round" />
+      <path d="M45 29 Q50 27 55 29" stroke={furShade} strokeWidth="1.6" fill="none" strokeLinecap="round" />
+      <circle cx="38" cy="42" r="6" fill={dark} />
+      <circle cx="62" cy="42" r="6" fill={dark} />
+      <circle cx="40" cy="40" r="1.6" fill="#fff" />
+      <circle cx="64" cy="40" r="1.6" fill="#fff" />
+      <ellipse cx="50" cy="54" rx="6.5" ry="5" fill={dark} />
+      <path
+        d="M50 58.5 L50 63 M50 63 Q41 70 34 63 M50 63 Q59 70 66 63"
+        stroke={dark}
+        strokeWidth="2.2"
+        fill="none"
+        strokeLinecap="round"
+      />
+      <path d="M26 70 Q50 80 74 70" stroke={pink} strokeWidth="7" fill="none" strokeLinecap="round" />
+      <circle cx="50" cy="80" r="4.5" fill="#fff" stroke={pink} strokeWidth="2" />
     </svg>
   );
 }
@@ -951,11 +946,11 @@ export default function Tracker() {
         </form>
       </section>
 
-      <section className="panel card advisor" aria-label="Recommendation for the week">
-        <AdvisorGirl />
+      <section className="panel card advisor" aria-label="Mason's recommendation">
+        <MasonIcon />
         <div className="advisortext">
           <div className="cardhead">
-            <h2>Recommendation for the week</h2>
+            <h2>Mason's recommendation</h2>
           </div>
           <p className="herofoot" style={{ maxWidth: "none" }}>
             {recommendation()}

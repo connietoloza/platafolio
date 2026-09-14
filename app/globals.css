@@ -174,7 +174,7 @@ form.add {
 .cardhead .meta { font-size: 12px; color: var(--muted); }
 
 .advisor { display: flex; align-items: center; gap: 18px; }
-.advisor .advisorgirl { flex: none; }
+.advisor .masonicon { flex: none; }
 .advisor .advisortext { flex: 1; min-width: 0; }
 .advisor .cardhead { margin-bottom: 8px; }
 
