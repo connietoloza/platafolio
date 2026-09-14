@@ -368,7 +368,8 @@ export default function Tracker() {
     const days = Math.ceil((target.getTime() - Date.now()) / 86400000);
     if (days <= 0) return null;
     const weeksLeft = days / 7;
-    return currentTotal + weekly * weeksLeft;
+    const saved = weekly * weeksLeft;
+    return { saved, total: currentTotal + saved, weeksLeft };
   }, [whatIfWeekly, whatIfDate, currentTotal]);
 
   const totalGoalTarget = goals.reduce((s, g) => s + g.target, 0);
@@ -980,7 +981,14 @@ export default function Tracker() {
           </span>
         </p>
         <p className="whatifresult">
-          {whatIfProjection === null ? "Pick a date after today." : <>you'd have <b>{fmt(whatIfProjection)}</b> total by then.</>}
+          {whatIfProjection === null ? (
+            "Pick a date after today."
+          ) : (
+            <>
+              that's about {whatIfProjection.weeksLeft.toFixed(1)} weeks, so <b>{fmt(whatIfProjection.saved)}</b> saved on top of what you have now,{" "}
+              <b>{fmt(whatIfProjection.total)}</b> total by then.
+            </>
+          )}
         </p>
       </section>
 
