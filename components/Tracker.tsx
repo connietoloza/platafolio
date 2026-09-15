@@ -141,6 +141,7 @@ export default function Tracker() {
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
   const [cat, setCat] = useState(CATS.out[0].id);
+  const [entryAccount, setEntryAccount] = useState<"paypal" | "usbank" | "clp">("usbank");
   const [date, setDate] = useState(() => dkey(new Date()));
   const [toast, setToastMsg] = useState<{ text: string; undo?: () => void } | null>(null);
   const [banner, setBanner] = useState("");
@@ -233,18 +234,39 @@ export default function Tracker() {
     toastTimer.current = setTimeout(() => setToastMsg(null), 6000);
   }
 
+  async function applyAccountDelta(account: Entry["account"], kind: "in" | "out", amount: number) {
+    if (!account || !userId) return;
+    const sign = kind === "out" ? -1 : 1;
+    const rate = accounts.rate > 0 ? accounts.rate : 942;
+    const next = { ...accounts };
+    if (account === "clp") next.clp = accounts.clp + sign * amount * rate;
+    else next[account] = accounts[account] + sign * amount;
+    setAccounts(next);
+    const { error } = await supabase.from("accounts").upsert({ id: userId, ...next, updated_at: Date.now() });
+    if (error) setBanner("That didn't save. Check your connection and try again.");
+  }
+
   async function addEntry(data: Omit<Entry, "id" | "ts" | "user_id">) {
     if (!userId) return;
     const e: Entry = { id: localId(), ts: Date.now(), user_id: userId, ...data };
     setEntries((prev) => [...prev, e]);
     const { error } = await supabase.from("entries").insert(e);
     if (error) setBanner("That didn't save. Check your connection and try again.");
+    if (e.account) await applyAccountDelta(e.account, e.kind, e.amount);
   }
 
   async function removeEntry(e: Entry) {
     setEntries((prev) => prev.filter((x) => x.id !== e.id));
     await supabase.from("entries").delete().eq("id", e.id);
+    if (e.account) await applyAccountDelta(e.account, e.kind === "out" ? "in" : "out", e.amount);
     showToast(`Deleted ${fmt(e.amount)}${e.note ? " · " + e.note : ""}`, () => addEntry(e));
+  }
+
+  async function updateEntryCat(e: Entry, newCat: string) {
+    if (newCat === e.cat) return;
+    setEntries((prev) => prev.map((x) => (x.id === e.id ? { ...x, cat: newCat } : x)));
+    const { error } = await supabase.from("entries").update({ cat: newCat }).eq("id", e.id);
+    if (error) setBanner("That didn't save. Check your connection and try again.");
   }
 
   function readBalDraft() {
@@ -452,6 +474,7 @@ export default function Tracker() {
       amount: amt,
       note: note.trim(),
       cat: kind === "dad" ? "dad" : cat,
+      account: entryAccount,
       date: date || dkey(new Date()),
     });
     setAmount("");
@@ -646,6 +669,7 @@ export default function Tracker() {
             onClick={() => {
               setKind("out");
               setCat(CATS.out[0].id);
+              setEntryAccount("usbank");
             }}
           >
             Spent
@@ -657,6 +681,7 @@ export default function Tracker() {
             onClick={() => {
               setKind("in");
               setCat(CATS.in[0].id);
+              setEntryAccount("paypal");
             }}
           >
             Earned
@@ -668,6 +693,7 @@ export default function Tracker() {
             onClick={() => {
               setKind("dad");
               setCat("dad");
+              setEntryAccount("usbank");
             }}
           >
             From dad
@@ -699,6 +725,13 @@ export default function Tracker() {
                 {c.label}
               </option>
             ))}
+          </select>
+        </label>
+        <label className="field">
+          <select aria-label="Which account" value={entryAccount} onChange={(e) => setEntryAccount(e.target.value as typeof entryAccount)}>
+            <option value="paypal">PayPal</option>
+            <option value="usbank">US bank</option>
+            <option value="clp">Chilean bank</option>
           </select>
         </label>
         <label className="field">
@@ -781,7 +814,22 @@ export default function Tracker() {
                         <i className="dotmark" style={{ background: c.color }} />
                         <div className="etext">
                           <div className="what">{e.note || (e.kind === "in" ? "Money in" : "Spending")}</div>
-                          <div className="cat">{c.label}</div>
+                          {e.cat === "dad" ? (
+                            <div className="cat">{c.label}</div>
+                          ) : (
+                            <select
+                              className="catedit"
+                              aria-label={`Category for ${e.note || "this entry"}`}
+                              value={e.cat}
+                              onChange={(ev) => updateEntryCat(e, ev.target.value)}
+                            >
+                              {CATS[e.kind === "out" ? "out" : "in"].map((opt) => (
+                                <option key={opt.id} value={opt.id}>
+                                  {opt.label}
+                                </option>
+                              ))}
+                            </select>
+                          )}
                         </div>
                         <div className={"eamt " + tone}>
                           {e.kind === "in" ? "+" : "−"}

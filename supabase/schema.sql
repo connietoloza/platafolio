@@ -8,6 +8,7 @@ create table if not exists entries (
   amount numeric not null,
   note text default '',
   cat text default 'other',
+  account text,
   date text not null,
   ts bigint not null
 );

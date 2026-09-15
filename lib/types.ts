@@ -5,6 +5,7 @@ export type Entry = {
   amount: number;
   note: string;
   cat: string;
+  account: "paypal" | "usbank" | "clp" | null;
   date: string; // YYYY-MM-DD
   ts: number;
 };
