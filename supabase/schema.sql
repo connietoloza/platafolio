@@ -48,3 +48,6 @@ create policy "users manage their own goals" on goals
 alter publication supabase_realtime add table entries;
 alter publication supabase_realtime add table accounts;
 alter publication supabase_realtime add table goals;
+
+-- Per-user weekly spending targets by category, e.g. {"transport":38,"food":35}
+alter table accounts add column if not exists targets jsonb;

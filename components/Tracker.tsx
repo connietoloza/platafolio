@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Entry, Accounts, Goal } from "@/lib/types";
 
-const TARGETS: Record<string, number> = { transport: 38, food: 20 };
+const DEFAULT_TARGETS: Record<string, number> = { transport: 38, food: 35 };
 const USUAL_IN = 250;
 
 type Cat = { id: string; label: string; color: string };
@@ -87,7 +87,9 @@ function BowIcon() {
   );
 }
 
-function MasonIcon() {
+type Mood = "hello" | "great" | "ok" | "warn";
+
+function MasonIcon({ mood }: { mood: Mood }) {
   const furBrown = "#C08A4E";
   const furShade = "#A9723A";
   const ivory = "#FDF8F3";
@@ -103,20 +105,44 @@ function MasonIcon() {
       <ellipse cx="67" cy="105" rx="8" ry="6" fill={ivory} />
       <circle cx="50" cy="46" r="30" fill={furBrown} />
       <ellipse cx="50" cy="58" rx="20" ry="15" fill={ivory} />
-      <path d="M38 24 Q50 19 62 24" stroke={furShade} strokeWidth="2.2" fill="none" strokeLinecap="round" />
-      <path d="M45 29 Q50 27 55 29" stroke={furShade} strokeWidth="1.6" fill="none" strokeLinecap="round" />
-      <circle cx="38" cy="42" r="6" fill={dark} />
-      <circle cx="62" cy="42" r="6" fill={dark} />
-      <circle cx="40" cy="40" r="1.6" fill="#fff" />
-      <circle cx="64" cy="40" r="1.6" fill="#fff" />
+      {mood === "warn" ? (
+        <>
+          <path d="M31 30 L45 35" stroke={furShade} strokeWidth="2.6" fill="none" strokeLinecap="round" />
+          <path d="M69 30 L55 35" stroke={furShade} strokeWidth="2.6" fill="none" strokeLinecap="round" />
+        </>
+      ) : (
+        <>
+          <path d="M38 24 Q50 19 62 24" stroke={furShade} strokeWidth="2.2" fill="none" strokeLinecap="round" />
+          <path d="M45 29 Q50 27 55 29" stroke={furShade} strokeWidth="1.6" fill="none" strokeLinecap="round" />
+        </>
+      )}
+      {mood === "great" ? (
+        <>
+          <path d="M32 44 Q38 35 44 44" stroke={dark} strokeWidth="3" fill="none" strokeLinecap="round" />
+          <path d="M56 44 Q62 35 68 44" stroke={dark} strokeWidth="3" fill="none" strokeLinecap="round" />
+          <circle cx="29" cy="52" r="3.6" fill={pink} opacity="0.35" />
+          <circle cx="71" cy="52" r="3.6" fill={pink} opacity="0.35" />
+        </>
+      ) : (
+        <>
+          <circle cx="38" cy="42" r={mood === "warn" ? 6.6 : 6} fill={dark} />
+          <circle cx="62" cy="42" r={mood === "warn" ? 6.6 : 6} fill={dark} />
+          <circle cx="40" cy="40" r="1.9" fill="#fff" />
+          <circle cx="64" cy="40" r="1.9" fill="#fff" />
+        </>
+      )}
       <ellipse cx="50" cy="54" rx="6.5" ry="5" fill={dark} />
-      <path
-        d="M50 58.5 L50 63 M50 63 Q41 70 34 63 M50 63 Q59 70 66 63"
-        stroke={dark}
-        strokeWidth="2.2"
-        fill="none"
-        strokeLinecap="round"
-      />
+      {mood === "great" ? (
+        <>
+          <path d="M50 58.5 L50 61 M36 61 Q50 76 64 61 Z" stroke={dark} strokeWidth="2.2" fill="#8B2E3C" strokeLinejoin="round" strokeLinecap="round" />
+          <path d="M44 68 Q50 76 56 68 Q50 65 44 68 Z" fill="#F27A94" />
+        </>
+      ) : mood === "warn" ? (
+        <path d="M50 58.5 L50 62 M50 62 Q42 57 36 64 M50 62 Q58 57 64 64" stroke={dark} strokeWidth="2.2" fill="none" strokeLinecap="round" />
+      ) : (
+        <path d="M50 58.5 L50 63 M50 63 Q41 70 34 63 M50 63 Q59 70 66 63" stroke={dark} strokeWidth="2.2" fill="none" strokeLinecap="round" />
+      )}
+      {mood === "warn" && <path d="M78 22 Q83 30 78 34 Q73 30 78 22 Z" fill="#7CC4F0" stroke="#3B8CC0" strokeWidth="1" />}
       <path d="M26 70 Q50 80 74 70" stroke={pink} strokeWidth="7" fill="none" strokeLinecap="round" />
       <circle cx="50" cy="80" r="4.5" fill="#fff" stroke={pink} strokeWidth="2" />
     </svg>
@@ -131,6 +157,7 @@ export default function Tracker() {
   const [accounts, setAccounts] = useState<Accounts>({ paypal: 0, usbank: 0, clp: 0, rate: 942 });
   const [balDraft, setBalDraft] = useState<{ paypal: string; usbank: string; clp: string } | null>(null);
   const [goals, setGoals] = useState<Goal[]>([]);
+  const [targets, setTargets] = useState<Record<string, number>>(DEFAULT_TARGETS);
   const [goalName, setGoalName] = useState("");
   const [goalTarget, setGoalTarget] = useState("");
   const [goalBy, setGoalBy] = useState("");
@@ -168,7 +195,10 @@ export default function Tracker() {
       if (!alive) return;
       if (e1 || e2 || e3) setBanner("Couldn't load your data. Reload the page to try again.");
       if (e) setEntries(e as Entry[]);
-      if (a) setAccounts({ paypal: Number(a.paypal) || 0, usbank: Number(a.usbank) || 0, clp: Number(a.clp) || 0, rate: Number(a.rate) || 942 });
+      if (a) {
+        setAccounts({ paypal: Number(a.paypal) || 0, usbank: Number(a.usbank) || 0, clp: Number(a.clp) || 0, rate: Number(a.rate) || 942 });
+        if (a.targets) setTargets(a.targets as Record<string, number>);
+      }
       if (g) setGoals(g as Goal[]);
       setLoaded(true);
 
@@ -198,6 +228,7 @@ export default function Tracker() {
             const row = payload.new as any;
             if (!row) return;
             setAccounts({ paypal: Number(row.paypal) || 0, usbank: Number(row.usbank) || 0, clp: Number(row.clp) || 0, rate: Number(row.rate) || 942 });
+            if (row.targets) setTargets(row.targets);
           }
         )
         .on(
@@ -323,6 +354,17 @@ export default function Tracker() {
     await supabase.from("goals").delete().eq("id", id);
   }
 
+  async function saveTarget(catId: string, value: string) {
+    if (!userId) return;
+    const n = Math.abs(parseFloat(value.replace(/[^0-9.]/g, ""))) || 0;
+    const next = { ...targets };
+    if (n > 0) next[catId] = n;
+    else delete next[catId];
+    setTargets(next);
+    const { error } = await supabase.from("accounts").upsert({ id: userId, targets: next, updated_at: Date.now() });
+    if (error) setBanner("That didn't save. Check your connection and try again.");
+  }
+
   async function saveBalances() {
     if (!userId) return;
     const next = { ...accounts, ...readBalDraft() };
@@ -409,12 +451,12 @@ export default function Tracker() {
       sums[c].n++;
     });
     const rows = CATS.out
-      .filter((c) => sums[c.id] || TARGETS[c.id] != null)
-      .map((c) => ({ cat: c, amount: sums[c.id]?.amount || 0, n: sums[c.id]?.n || 0, target: TARGETS[c.id] || 0 }))
+      .filter((c) => sums[c.id] || targets[c.id] != null)
+      .map((c) => ({ cat: c, amount: sums[c.id]?.amount || 0, n: sums[c.id]?.n || 0, target: targets[c.id] || 0 }))
       .sort((a, b) => (b.amount || 0) - (a.amount || 0) || b.target - a.target);
     const max = rows.reduce((m, r) => Math.max(m, r.amount, r.target), 1);
     return { rows, max };
-  }, [week]);
+  }, [week, targets]);
 
   const byDay = useMemo(() => {
     const map: Record<string, Entry[]> = {};
@@ -481,25 +523,35 @@ export default function Tracker() {
     setNote("");
   }
 
-  function recommendation() {
-    if (!week.length) return "Log a few things this week and I'll tell you exactly what to adjust to hit your goal.";
+  function recommendation(): { mood: Mood; title: string; text: string } {
+    if (!week.length)
+      return { mood: "hello", title: "Hi, I'm Mason!", text: "Log a few things this week and I'll tell you exactly what to adjust to hit your goal." };
     const topCat = barRows.rows.reduce<typeof barRows.rows[number] | null>(
       (top, r) => (r.amount > (top?.amount ?? 0) ? r : top),
       null
     );
     if (totals.net >= weeklyGoal) {
-      return `You're doing good! You hit this week's ${fmtShort(weeklyGoal)} goal and kept ${fmt(totals.net)}. Keep this pace and that's about ${fmtShort(
-        weeklyGoal * 4
-      )} saved a month toward your goal.`;
+      return {
+        mood: "great",
+        title: "Great job!",
+        text: `You hit this week's ${fmtShort(weeklyGoal)} goal and kept ${fmt(totals.net)}. Keep this pace and that's about ${fmtShort(
+          weeklyGoal * 4
+        )} saved a month toward your goal.`,
+      };
     }
     if (totals.net >= 0) {
       const gap = weeklyGoal - totals.net;
-      const catMsg = topCat ? ` ${topCat.cat.label} was your biggest spend at ${fmt(topCat.amount)}, cutting back there next week would close most of the gap.` : "";
-      return `Almost there, you're ${fmt(gap)} short of this week's ${fmtShort(weeklyGoal)} goal.${catMsg}`;
+      const catMsg = topCat ? ` ${topCat.cat.label} was your biggest spend at ${fmt(topCat.amount)}, so cutting back there next week would close most of the gap.` : "";
+      return { mood: "ok", title: "Almost there!", text: `You're ${fmt(gap)} short of this week's ${fmtShort(weeklyGoal)} goal.${catMsg}` };
     }
     const catMsg = topCat ? ` Most of it went to ${topCat.cat.label} (${fmt(topCat.amount)}).` : "";
-    return `Watch out, you spent ${fmt(-totals.net)} more than came in this week.${catMsg} Try trimming that next week so you don't fall further behind on your goal.`;
+    return {
+      mood: "warn",
+      title: "Uh oh, heads up!",
+      text: `You spent ${fmt(-totals.net)} more than came in this week.${catMsg} Try trimming that next week so you don't fall behind on your goal.`,
+    };
   }
+  const rec = recommendation();
 
   const pct = totals.totIn > 0 ? Math.min(100, (totals.spent / totals.totIn) * 100) : totals.spent > 0 ? 100 : 0;
   const draft = balDraft ?? {
@@ -508,7 +560,7 @@ export default function Tracker() {
     clp: accounts.clp ? String(Math.round(accounts.clp)) : "",
   };
 
-  const usualOut = TARGETS.transport + TARGETS.food;
+  const usualOut = (targets.transport || 0) + (targets.food || 0);
 
   if (!loaded) return null;
 
@@ -655,7 +707,7 @@ export default function Tracker() {
           <div className={"fill" + (totals.spent > totals.totIn && totals.spent > 0 ? " over" : "")} style={{ width: pct + "%" }} />
         </div>
         <p className="usual">
-          Your usual week: about {fmtShort(USUAL_IN)} in, {fmtShort(TARGETS.transport)} gas + {fmtShort(TARGETS.food)} food, roughly{" "}
+          Your usual week: about {fmtShort(USUAL_IN)} in, {fmtShort(targets.transport || 0)} gas + {fmtShort(targets.food || 0)} food, roughly{" "}
           {fmtShort(USUAL_IN - usualOut)} left over.
         </p>
       </section>
@@ -766,7 +818,18 @@ export default function Tracker() {
                   </div>
                   <div className="amt">
                     {fmtShort(row.amount)}
-                    {row.target ? <span className="goal"> / {fmtShort(row.target)}</span> : null}
+                    <span className="goal">
+                      {" / $"}
+                      <input
+                        className="targetinput"
+                        inputMode="decimal"
+                        aria-label={`Weekly target for ${row.cat.label}`}
+                        placeholder="set"
+                        key={row.cat.id + ":" + row.target}
+                        defaultValue={row.target ? String(row.target) : ""}
+                        onBlur={(e) => saveTarget(row.cat.id, e.target.value)}
+                      />
+                    </span>
                   </div>
                   <div className="bartrack">
                     <div
@@ -1041,14 +1104,13 @@ export default function Tracker() {
       </section>
 
       <section className="panel card advisor" aria-label="Mason's recommendation">
-        <MasonIcon />
-        <div className="advisortext">
-          <div className="cardhead">
-            <h2>Mason's recommendation</h2>
+        <MasonIcon mood={rec.mood} />
+        <div className={"bubble mood-" + rec.mood}>
+          <div className="bubblehead">
+            <span className="bubbletag">Mason says</span>
+            <h2>{rec.title}</h2>
           </div>
-          <p className="herofoot" style={{ maxWidth: "none" }}>
-            {recommendation()}
-          </p>
+          <p>{rec.text}</p>
         </div>
       </section>
 
