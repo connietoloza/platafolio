@@ -573,9 +573,6 @@ export default function Tracker() {
       <header>
         <div>
           <div className="headtop">
-            <div className="avatarbadge" aria-hidden="true">
-              <BowIcon />
-            </div>
             <h1>Know Your Money w Connie</h1>
             <button className="logout" onClick={logout} type="button">
               log out{userEmail ? ` (${userEmail})` : ""}
@@ -611,7 +608,7 @@ export default function Tracker() {
       <section className="panel accounts" aria-label="Account balances">
         <div className="acct">
           <span className="who">
-            <span className="accticon">💳</span>
+            <i className="dotmark" style={{ background: "var(--c-bills)" }} />
             PayPal
           </span>
           <div className="balwrap">
@@ -629,7 +626,7 @@ export default function Tracker() {
         </div>
         <div className="acct">
           <span className="who">
-            <span className="accticon">🏦</span>
+            <i className="dotmark" style={{ background: "var(--c-transport)" }} />
             US bank
           </span>
           <div className="balwrap">
@@ -647,7 +644,7 @@ export default function Tracker() {
         </div>
         <div className="acct">
           <span className="who">
-            <span className="accticon">🌎</span>
+            <i className="dotmark" style={{ background: "var(--c-shopping)" }} />
             Chilean bank
           </span>
           <div className="balwrap">
@@ -666,10 +663,7 @@ export default function Tracker() {
           </span>
         </div>
         <div className="acct total">
-          <span className="who">
-            <span className="accticon">💰</span>
-            All together
-          </span>
+          <span className="who">All together</span>
           <div className="amount">{fmt(currentTotal)}</div>
           <span className="sub">at {pesos.format(rateVal)} CLP to the dollar</span>
         </div>
