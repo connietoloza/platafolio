@@ -22,13 +22,6 @@
   --c-health: #E8618C;
   --c-transport: #3FADA6;
   --c-other: #B497AC;
-
-  --pop-pink: #FF90BC;
-  --pop-gold: #FFCB56;
-  --tint-blush: #F8E8EE;
-  --tint-rose: #F4DADA;
-  --tint-cream: #FFF0BE;
-  --font-fintech: "Oswald", "IBM Plex Mono", sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -55,12 +48,6 @@
     --c-health: #FF8FAE;
     --c-transport: #79DAD3;
     --c-other: #D0AFC2;
-
-    --pop-pink: #FF9FC6;
-    --pop-gold: #FFD873;
-    --tint-blush: #3A2732;
-    --tint-rose: #3F2A2C;
-    --tint-cream: #3B3420;
   }
 }
 
@@ -111,9 +98,9 @@ header h1 { font-size: 32px; font-weight: 400; letter-spacing: .03em; color: var
 .acct .who { font-size: 12px; font-weight: 700; color: var(--ink-2); display: flex; align-items: center; gap: 6px; }
 .acct .sub { font-size: 11.5px; color: var(--muted); }
 .balwrap { display: flex; align-items: baseline; gap: 3px; color: var(--ink); }
-.balwrap .sym { font-family: var(--font-fintech); font-size: 15px; color: var(--muted); }
+.balwrap .sym { font-family: "IBM Plex Mono", monospace; font-size: 15px; color: var(--muted); }
 input.bal {
-  font-family: var(--font-fintech); font-variant-numeric: tabular-nums;
+  font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums;
   font-size: 21px; font-weight: 600; letter-spacing: -.02em;
   background: transparent; border: 0; border-bottom: 1px dashed transparent;
   color: var(--ink); width: 100%; padding: 1px 0; outline: none; min-width: 0;
@@ -122,7 +109,7 @@ input.bal:hover { border-bottom-color: var(--line-strong); }
 input.bal:focus { border-bottom-color: var(--accent); }
 .acct.total { background: var(--surface-2); border-radius: 0 19px 19px 0; }
 .acct.total .amount {
-  font-family: var(--font-fintech); font-variant-numeric: tabular-nums;
+  font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums;
   font-size: 21px; font-weight: 600; letter-spacing: -.02em; color: var(--accent);
 }
 
@@ -133,7 +120,7 @@ input.bal:focus { border-bottom-color: var(--accent); }
 .weekstats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
 .stat { background: var(--surface-2); border-radius: 16px; padding: 14px 8px; text-align: center; }
 .statlbl { display: block; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
-.statnum { font-family: var(--font-fintech); font-weight: 700; font-size: clamp(18px, 5vw, 24px); letter-spacing: -.01em; }
+.statnum { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: clamp(18px, 5vw, 24px); letter-spacing: -.01em; }
 .statnum.out { color: var(--out); }
 .statnum.in { color: var(--in); }
 .statsub { display: block; font-size: 10px; color: var(--muted); margin-top: 3px; }
@@ -310,7 +297,7 @@ ul.entries li:hover .del, .del:focus-visible { opacity: 1; }
 .goal { margin-top: 16px; }
 .goaltop { display: grid; grid-template-columns: minmax(190px, 250px) 1fr; gap: 28px; align-items: center; }
 .goalbig {
-  font-family: var(--font-fintech); font-weight: 700; font-size: clamp(30px, 6vw, 40px);
+  font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: clamp(30px, 6vw, 40px);
   line-height: 1.05; letter-spacing: -.01em; font-variant-numeric: tabular-nums; margin-top: 4px;
 }
 .chartarea { position: relative; height: 132px; }
