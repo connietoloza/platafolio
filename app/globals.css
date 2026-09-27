@@ -22,6 +22,8 @@
   --c-health: #E8618C;
   --c-transport: #3FADA6;
   --c-other: #B497AC;
+
+  --pop-pink: #FF90BC;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -48,6 +50,8 @@
     --c-health: #FF8FAE;
     --c-transport: #79DAD3;
     --c-other: #D0AFC2;
+
+    --pop-pink: #FF9FC6;
   }
 }
 
@@ -109,8 +113,8 @@ input.bal:hover { border-bottom-color: var(--line-strong); }
 input.bal:focus { border-bottom-color: var(--accent); }
 .acct.total { background: var(--surface-2); border-radius: 0 19px 19px 0; }
 .acct.total .amount {
-  font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums;
-  font-size: 21px; font-weight: 600; letter-spacing: -.02em; color: var(--accent);
+  font-family: "Oswald", "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums;
+  font-size: 23px; font-weight: 700; letter-spacing: -.01em; color: var(--pop-pink);
 }
 
 /* ---------- week panel ---------- */
