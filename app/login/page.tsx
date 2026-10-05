@@ -53,7 +53,7 @@ export default function LoginPage() {
           </svg>
           by Connie Toloza
         </div>
-        <h1>Know Your Money w Connie</h1>
+        <h1>Platafolio</h1>
         <p className="loginsub">Sign in to keep track of your money while you&rsquo;re in college.</p>
         <input
           className="loginfield"

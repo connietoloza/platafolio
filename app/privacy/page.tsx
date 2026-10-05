@@ -1,4 +1,4 @@
-export const metadata = { title: "Privacy · Know Your Money w Connie" };
+export const metadata = { title: "Privacy · Platafolio" };
 
 export default function PrivacyPage() {
   return (
@@ -6,7 +6,7 @@ export default function PrivacyPage() {
       <div className="panel card" style={{ marginTop: 28 }}>
         <h1 style={{ fontSize: 22, marginBottom: 12 }}>Privacy</h1>
         <p className="herofoot" style={{ maxWidth: "none" }}>
-          Know Your Money w Connie is a small personal budgeting tool. Here&rsquo;s what it does with your
+          Platafolio is a small personal budgeting tool. Here&rsquo;s what it does with your
           information:
         </p>
         <ul style={{ color: "var(--ink-2)", fontSize: 14, lineHeight: 1.7, paddingLeft: 20 }}>

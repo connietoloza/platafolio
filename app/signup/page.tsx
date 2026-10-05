@@ -58,7 +58,7 @@ export default function SignupPage() {
           </svg>
           by Connie Toloza
         </div>
-        <h1>Know Your Money w Connie</h1>
+        <h1>Platafolio</h1>
         {checkEmail ? (
           <p className="loginsub">
             Check <b>{email}</b> for a confirmation link, then come back and sign in.

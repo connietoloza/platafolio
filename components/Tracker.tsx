@@ -573,7 +573,7 @@ export default function Tracker() {
       <header>
         <div>
           <div className="headtop">
-            <h1>Know Your Money w Connie</h1>
+            <h1>Platafolio</h1>
             <button className="logout" onClick={logout} type="button">
               log out{userEmail ? ` (${userEmail})` : ""}
             </button>
